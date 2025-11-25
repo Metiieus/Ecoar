@@ -32,8 +32,14 @@ export const ApiDataProvider = ({ children }) => {
 
     setLoadingAllDevices(true);
     const aggregatedData = {};
+    const validationResults = {
+      successful: [],
+      failed: []
+    };
 
     try {
+      console.log(`📊 Loading data for ${allDeviceIds.length} devices...`);
+
       // Fetch data for each device and aggregate
       for (const deviceId of allDeviceIds) {
         try {
@@ -60,22 +66,46 @@ export const ApiDataProvider = ({ children }) => {
 
           if (response.ok) {
             const data = await response.json();
+
+            // Validate data structure
+            const dataIsValid = validateDeviceData(deviceId, data);
             aggregatedData[deviceId] = data;
+
+            if (dataIsValid) {
+              validationResults.successful.push(deviceId);
+              console.log(`✅ Device ${deviceId} loaded and validated successfully`);
+            } else {
+              validationResults.failed.push(deviceId);
+              console.warn(`⚠️ Device ${deviceId} loaded but has data quality issues`);
+            }
           } else {
-            console.warn(`API returned status ${response.status} for device ${deviceId}`);
+            validationResults.failed.push(deviceId);
+            console.warn(`❌ API returned status ${response.status} for device ${deviceId}`);
           }
         } catch (err) {
-          console.warn(`Error loading device ${deviceId}:`, err.message);
+          validationResults.failed.push(deviceId);
+          console.warn(`❌ Error loading device ${deviceId}:`, err.message);
         }
       }
 
       setAllDevicesData(aggregatedData);
+
+      // Log summary
+      console.log(`📊 Device Loading Summary:`);
+      console.log(`✅ Successful: ${validationResults.successful.length}/${allDeviceIds.length}`);
+      console.log(`❌ Failed: ${validationResults.failed.length}/${allDeviceIds.length}`);
+      if (validationResults.successful.length > 0) {
+        console.log(`   Devices: ${validationResults.successful.join(', ')}`);
+      }
+      if (validationResults.failed.length > 0) {
+        console.log(`   Failed devices: ${validationResults.failed.join(', ')}`);
+      }
     } catch (err) {
       console.error('Error loading all devices data:', err);
     } finally {
       setLoadingAllDevices(false);
     }
-  }, [selectedDeviceId]);
+  }, [selectedDeviceId, allDeviceIds]);
 
   // Aggregate data from multiple devices
   const aggregateDevicesData = useCallback((devicesDataMap) => {
