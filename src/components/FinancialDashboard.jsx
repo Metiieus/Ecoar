@@ -351,7 +351,7 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
         splitLine: { lineStyle: { color: '#f3f4f6' } }
       },
       legend: {
-        data: ['Consumo Diário', 'Diário + sem Sistema'],
+        data: ['Consumo Diário', 'Diário + sem Sistema', 'Meta'],
         top: 0,
         textStyle: { color: '#6b7280', fontSize: 12 }
       },
@@ -374,6 +374,16 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
           }),
           type: 'bar',
           itemStyle: { color: '#ef4444' },
+          emphasis: { itemStyle: { borderWidth: 2 } }
+        },
+        {
+          name: 'Meta',
+          data: chartData.map(() => ensureNonNegative(currentMeta / chartData.length)),
+          type: 'line',
+          smooth: false,
+          lineStyle: { width: 2, color: '#f59e0b', type: 'dashed' },
+          itemStyle: { color: '#f59e0b' },
+          symbolSize: 4,
           emphasis: { itemStyle: { borderWidth: 2 } }
         }
       ]
