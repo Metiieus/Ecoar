@@ -5,6 +5,7 @@ import GaugeChart from 'react-gauge-chart';
 import { Tooltip as UITooltip, TooltipTrigger, TooltipContent } from './ui/tooltip';
 import { deviceRankings } from '../data/mockData';
 import { useApiDataContext } from '../context/ApiDataContext';
+import { useMetaStorage } from '../hooks/useMetaStorage';
 import {
   ensureNonNegative,
   getFilteredConsumptionData,
@@ -14,13 +15,11 @@ import {
   calculateEconomyRate,
   getComparisonWithPreviousPeriod,
   getActivationHours,
-  loadMetaFromStorage,
-  saveMetaToStorage,
   getLastSevenDays,
   getLastThreeMonths,
+  getSelectedPeriodConsumption,
   loadActivationTimeMeta,
-  saveActivationTimeMeta,
-  getSelectedPeriodConsumption
+  saveActivationTimeMeta
 } from '../lib/calculationUtils';
 
 const monthNames = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
