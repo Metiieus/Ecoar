@@ -284,33 +284,32 @@ export const getLastThreeMonths = (monthlyData) => {
 };
 
 /**
- * Load activation time meta from localStorage for a specific device
+ * Load activation time meta from SQLite database for a specific device
  * @param {Number|String} deviceId - Device ID
  * @param {String} filterType - 'daily' or 'monthly'
  * @param {Number} periodIndex - Period index (month or day)
- * @returns {Number} Saved activation time meta in hours or default value
+ * @returns {Promise<Number>} Saved activation time meta in hours or default value
  */
-export const loadActivationTimeMeta = (deviceId, filterType, periodIndex) => {
-  const key = `activation_meta_device_${deviceId}_${filterType}_${periodIndex}`;
-  const stored = localStorage.getItem(key);
-
-  if (stored) {
-    return parseFloat(stored);
+export const loadActivationTimeMeta = async (deviceId, filterType, periodIndex) => {
+  try {
+    return await loadActivationMeta(deviceId, filterType, periodIndex);
+  } catch (error) {
+    console.error('Erro ao carregar meta de ativação:', error);
+    return filterType === 'daily' ? 24 : 720;
   }
-
-  // Default values: 24 hours for daily, 720 hours for monthly
-  return filterType === 'daily' ? 24 : 720;
 };
 
 /**
- * Save activation time meta to localStorage for a specific device
+ * Save activation time meta to SQLite database for a specific device
  * @param {Number|String} deviceId - Device ID
  * @param {String} filterType - 'daily' or 'monthly'
  * @param {Number} periodIndex - Period index
  * @param {Number} value - Activation time meta in hours
  */
-export const saveActivationTimeMeta = (deviceId, filterType, periodIndex, value) => {
-  const key = `activation_meta_device_${deviceId}_${filterType}_${periodIndex}`;
-  localStorage.setItem(key, String(value));
-  console.log(`⏱️ Meta de tempo de atuação salva para dispositivo ${deviceId}:`, key, '=', value);
+export const saveActivationTimeMeta = async (deviceId, filterType, periodIndex, value) => {
+  try {
+    await saveActivationMeta(deviceId, filterType, periodIndex, value);
+  } catch (error) {
+    console.error('Erro ao salvar meta de ativação:', error);
+  }
 };
