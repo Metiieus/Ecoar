@@ -5,6 +5,7 @@ import GaugeChart from 'react-gauge-chart';
 import { Tooltip as UITooltip, TooltipTrigger, TooltipContent } from './ui/tooltip';
 import { deviceRankings } from '../data/mockData';
 import { useApiDataContext } from '../context/ApiDataContext';
+import { useMetaStorage } from '../hooks/useMetaStorage';
 import {
   ensureNonNegative,
   getFilteredConsumptionData,
@@ -14,13 +15,11 @@ import {
   calculateEconomyRate,
   getComparisonWithPreviousPeriod,
   getActivationHours,
-  loadMetaFromStorage,
-  saveMetaToStorage,
   getLastSevenDays,
   getLastThreeMonths,
+  getSelectedPeriodConsumption,
   loadActivationTimeMeta,
-  saveActivationTimeMeta,
-  getSelectedPeriodConsumption
+  saveActivationTimeMeta
 } from '../lib/calculationUtils';
 
 const monthNames = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
@@ -35,19 +34,18 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
   const [editingDeviceTimeId, setEditingDeviceTimeId] = useState(null);
   const [deviceTimeInputValue, setDeviceTimeInputValue] = useState('');
   const [monthMetaTablePageIndex, setMonthMetaTablePageIndex] = useState(0);
+  const [allActivationMetas, setAllActivationMetas] = useState({});
+  const [deviceMetas, setDeviceMetas] = useState({});
 
   const currentMonthIndex = new Date().getMonth();
   const currentYear = new Date().getFullYear();
 
-  // Load meta from localStorage
-  const currentMeta = useMemo(() => {
-    return loadMetaFromStorage(selectedDeviceId, periodFilter, selectedPeriodIndex);
-  }, [selectedDeviceId, periodFilter, selectedPeriodIndex]);
-
-  // Load activation time meta from localStorage
-  const currentTimeMeta = useMemo(() => {
-    return loadActivationTimeMeta(selectedDeviceId, 'monthly', selectedPeriodIndex);
-  }, [selectedDeviceId, selectedPeriodIndex]);
+  // Use hook for meta storage with instant updates
+  const { currentMeta, saveMeta, currentTimeMeta, saveTimeMeta } = useMetaStorage(
+    selectedDeviceId,
+    periodFilter,
+    selectedPeriodIndex
+  );
 
   useEffect(() => {
     setCostInputValue(currentMeta.toString());
@@ -61,6 +59,40 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
     setMonthMetaTablePageIndex(0);
   }, [periodFilter]);
 
+  // Load all activation metas for the table
+  useEffect(() => {
+    const loadAllMetas = async () => {
+      const metas = {};
+      if (periodFilter === 'daily') {
+        const dailyData = apiData?.consumo_diario_mes_corrente || [];
+        for (let dayIndex = 0; dayIndex < dailyData.length; dayIndex++) {
+          const meta = await loadActivationTimeMeta(selectedDeviceId, 'daily', dayIndex);
+          metas[`daily_${dayIndex}`] = meta;
+        }
+      } else {
+        for (let monthIndex = 0; monthIndex <= currentMonthIndex; monthIndex++) {
+          const meta = await loadActivationTimeMeta(selectedDeviceId, 'monthly', monthIndex);
+          metas[`monthly_${monthIndex}`] = meta;
+        }
+      }
+      setAllActivationMetas(metas);
+    };
+    loadAllMetas();
+  }, [selectedDeviceId, periodFilter, currentMonthIndex, apiData]);
+
+  // Load device metas
+  useEffect(() => {
+    const loadDeviceMetas = async () => {
+      const metas = {};
+      for (const device of deviceRankings.slice(0, 3)) {
+        const meta = await loadActivationTimeMeta(device.id, periodFilter, selectedPeriodIndex);
+        metas[device.id] = meta;
+      }
+      setDeviceMetas(metas);
+    };
+    loadDeviceMetas();
+  }, [periodFilter, selectedPeriodIndex]);
+
   const handleCostInputChange = (e) => {
     setCostInputValue(e.target.value);
   };
@@ -71,7 +103,7 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
     }
   };
 
-  const handleSaveCostMeta = () => {
+  const handleSaveCostMeta = async () => {
     const newValue = parseFloat(costInputValue);
     console.log('🔧 Tentando salvar meta:', {
       newValue,
@@ -82,7 +114,7 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
     });
 
     if (!isNaN(newValue) && newValue > 0) {
-      saveMetaToStorage(selectedDeviceId, periodFilter, selectedPeriodIndex, newValue);
+      await saveMeta(newValue);
       setIsEditingMeta(false);
       console.log('✅ Meta salva com sucesso');
     } else {
@@ -90,7 +122,7 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
     }
   };
 
-  const handleSaveDeviceTimeMeta = (deviceId) => {
+  const handleSaveDeviceTimeMeta = async (deviceId) => {
     const newValue = parseFloat(deviceTimeInputValue);
     console.log('🔧 Tentando salvar meta de tempo:', {
       newValue,
@@ -101,7 +133,7 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
     });
 
     if (!isNaN(newValue) && newValue > 0) {
-      saveActivationTimeMeta(deviceId, periodFilter, selectedPeriodIndex, newValue);
+      await saveActivationTimeMeta(deviceId, periodFilter, selectedPeriodIndex, newValue);
       setEditingDeviceTimeId(null);
       setDeviceTimeInputValue('');
       console.log('✅ Meta de tempo salva com sucesso');
@@ -120,7 +152,7 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
     }
   };
 
-  const handleSaveTimeMeta = () => {
+  const handleSaveTimeMeta = async () => {
     const newValue = parseFloat(timeMetaInputValue);
     console.log('🔧 Tentando salvar meta de tempo mensal:', {
       newValue,
@@ -130,7 +162,7 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
     });
 
     if (!isNaN(newValue) && newValue > 0) {
-      saveActivationTimeMeta(selectedDeviceId, 'monthly', selectedPeriodIndex, newValue);
+      await saveActivationTimeMeta(selectedDeviceId, 'monthly', selectedPeriodIndex, newValue);
       setIsEditingTimeMeta(false);
       console.log('✅ Meta mensal de tempo salva com sucesso');
     } else {
@@ -351,7 +383,7 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
         splitLine: { lineStyle: { color: '#f3f4f6' } }
       },
       legend: {
-        data: ['Consumo Diário', 'Diário + sem Sistema'],
+        data: ['Consumo Diário', 'Diário + sem Sistema', 'Meta'],
         top: 0,
         textStyle: { color: '#6b7280', fontSize: 12 }
       },
@@ -374,6 +406,16 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
           }),
           type: 'bar',
           itemStyle: { color: '#ef4444' },
+          emphasis: { itemStyle: { borderWidth: 2 } }
+        },
+        {
+          name: 'Meta',
+          data: chartData.map(() => ensureNonNegative(currentMeta / chartData.length)),
+          type: 'line',
+          smooth: false,
+          lineStyle: { width: 2, color: '#f59e0b', type: 'dashed' },
+          itemStyle: { color: '#f59e0b' },
+          symbolSize: 4,
           emphasis: { itemStyle: { borderWidth: 2 } }
         }
       ]
@@ -423,7 +465,7 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
     if (periodFilter === 'daily') {
       const dailyData = apiData?.consumo_diario_mes_corrente || [];
       return dailyData.map((_, dayIndex) => {
-        const meta = loadActivationTimeMeta(selectedDeviceId, 'daily', dayIndex);
+        const meta = allActivationMetas[`daily_${dayIndex}`] || 24;
         const downtimeMinutes = apiData?.minutos_desligado_diario?.[dayIndex] || 0;
         const actualHours = downtimeMinutes / 60;
 
@@ -436,7 +478,7 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
     }
 
     return monthNames.slice(0, currentMonthIndex + 1).map((name, monthIndex) => {
-      const meta = loadActivationTimeMeta(selectedDeviceId, 'monthly', monthIndex);
+      const meta = allActivationMetas[`monthly_${monthIndex}`] || 720;
       const downtimeMinutes = apiData?.minutos_desligado_mensal?.[monthIndex] || 0;
       const actualHours = downtimeMinutes / 60;
 
@@ -446,7 +488,7 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
         atualização: `${actualHours.toFixed(1)} H`
       };
     });
-  }, [apiData, selectedDeviceId, periodFilter, currentMonthIndex]);
+  }, [apiData, periodFilter, currentMonthIndex, allActivationMetas]);
 
   const itemsPerPage = 4;
   const totalPages = Math.ceil(allMonthsData.length / itemsPerPage);
@@ -480,9 +522,14 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
               : 'bg-white border-[#E8DCC8] hover:shadow-lg'
           }`}>
             <div className="flex items-center justify-between mb-3">
-              <p className="text-xs font-bold text-[#6B7560] uppercase tracking-wide">
-                Meta - {periodFilter === 'daily' ? `D${selectedPeriodIndex + 1}` : monthNames[selectedPeriodIndex]}
-              </p>
+              <div className="flex flex-col gap-0.5">
+                <p className="text-xs font-bold text-[#6B7560] uppercase tracking-wide">
+                  {periodFilter === 'daily' ? 'Meta Diária' : 'Meta Mensal'}
+                </p>
+                <p className="text-xs text-[#A3B18A]">
+                  {periodFilter === 'daily' ? `Dia ${selectedPeriodIndex + 1}` : monthNames[selectedPeriodIndex]}
+                </p>
+              </div>
               <TrendingDown className="w-4 h-4 text-[#1F4532]" />
             </div>
             {isEditingMeta ? (
@@ -578,7 +625,7 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
                 <GaugeChart
                   id="economia-gauge"
                   nrOfLevels={5}
-                  colors={['#ef4444', '#f97316', '#eab308', '#84cc16', '#10b981']}
+                  colors={['#065f46', '#047857', '#10b981', '#6ee7b7', '#d1fae5']}
                   arcPadding={0.1}
                   percent={Math.min(economyRate / 100, 1)}
                   textColor="#1f2937"
@@ -876,7 +923,7 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
               <p className="text-xs text-[#6B7560] font-semibold mb-2">Dispositivos Ativos</p>
               <div className="space-y-1 max-h-28 overflow-y-auto">
                 {deviceRankings.slice(0, 3).map((device) => {
-                  const deviceTimeMeta = loadActivationTimeMeta(device.id, periodFilter, selectedPeriodIndex);
+                  const deviceTimeMeta = deviceMetas[device.id] || (periodFilter === 'daily' ? 24 : 720);
                   const isEditing = editingDeviceTimeId === device.id;
 
                   return (
