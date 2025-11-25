@@ -86,7 +86,7 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
     }
   };
 
-  const handleSaveDeviceTimeMeta = (deviceId) => {
+  const handleSaveDeviceTimeMeta = async (deviceId) => {
     const newValue = parseFloat(deviceTimeInputValue);
     console.log('🔧 Tentando salvar meta de tempo:', {
       newValue,
@@ -97,7 +97,7 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
     });
 
     if (!isNaN(newValue) && newValue > 0) {
-      saveActivationTimeMeta(deviceId, periodFilter, selectedPeriodIndex, newValue);
+      await saveActivationTimeMeta(deviceId, periodFilter, selectedPeriodIndex, newValue);
       setEditingDeviceTimeId(null);
       setDeviceTimeInputValue('');
       console.log('✅ Meta de tempo salva com sucesso');
@@ -116,7 +116,7 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
     }
   };
 
-  const handleSaveTimeMeta = () => {
+  const handleSaveTimeMeta = async () => {
     const newValue = parseFloat(timeMetaInputValue);
     console.log('🔧 Tentando salvar meta de tempo mensal:', {
       newValue,
@@ -126,7 +126,7 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
     });
 
     if (!isNaN(newValue) && newValue > 0) {
-      saveActivationTimeMeta(selectedDeviceId, 'monthly', selectedPeriodIndex, newValue);
+      await saveActivationTimeMeta(selectedDeviceId, 'monthly', selectedPeriodIndex, newValue);
       setIsEditingTimeMeta(false);
       console.log('✅ Meta mensal de tempo salva com sucesso');
     } else {
