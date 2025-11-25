@@ -105,7 +105,7 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
 
   const handleSaveCostMeta = async () => {
     const newValue = parseFloat(costInputValue);
-    console.log('🔧 Tentando salvar meta:', {
+    console.log('🔧 Attempting to save meta:', {
       newValue,
       deviceId: selectedDeviceId,
       periodFilter,
@@ -114,11 +114,22 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
     });
 
     if (!isNaN(newValue) && newValue > 0) {
-      await saveMeta(newValue);
-      setIsEditingMeta(false);
-      console.log('✅ Meta salva com sucesso');
+      try {
+        const success = await saveMeta(newValue);
+        if (success) {
+          setIsEditingMeta(false);
+          console.log('✅ Meta saved successfully');
+        } else {
+          console.error('❌ Failed to save meta - database error');
+          alert('Erro ao salvar meta. Por favor, tente novamente.');
+        }
+      } catch (error) {
+        console.error('❌ Error saving meta:', error);
+        alert('Erro ao salvar meta. Por favor, tente novamente.');
+      }
     } else {
-      console.warn('❌ Valor inválido para meta:', costInputValue);
+      console.warn('❌ Invalid value for meta:', costInputValue);
+      alert('Por favor, insira um valor válido para a meta');
     }
   };
 
