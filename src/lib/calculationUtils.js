@@ -240,9 +240,11 @@ import { loadMeta, saveMeta, loadActivationMeta, saveActivationMeta } from './sq
  */
 export const loadMetaFromStorage = async (deviceId, filterType, periodIndex) => {
   try {
-    return await loadMeta(deviceId, filterType, periodIndex);
+    const result = await loadMeta(deviceId, filterType, periodIndex);
+    console.log(`✅ loadMetaFromStorage completed: ${result}`);
+    return result;
   } catch (error) {
-    console.error('Erro ao carregar meta:', error);
+    console.error('Error loading meta from storage:', error);
     return 10000;
   }
 };
@@ -253,12 +255,16 @@ export const loadMetaFromStorage = async (deviceId, filterType, periodIndex) => 
  * @param {String} filterType - 'daily' or 'monthly'
  * @param {Number} periodIndex - Period index
  * @param {Number} value - Meta value to save
+ * @returns {Promise<boolean>} Success status
  */
 export const saveMetaToStorage = async (deviceId, filterType, periodIndex, value) => {
   try {
-    await saveMeta(deviceId, filterType, periodIndex, value);
+    const result = await saveMeta(deviceId, filterType, periodIndex, value);
+    console.log(`✅ saveMetaToStorage completed: ${result}`);
+    return result;
   } catch (error) {
-    console.error('Erro ao salvar meta:', error);
+    console.error('Error saving meta to storage:', error);
+    return false;
   }
 };
 
