@@ -58,6 +58,27 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
     setMonthMetaTablePageIndex(0);
   }, [periodFilter]);
 
+  // Load all activation metas for the table
+  useEffect(() => {
+    const loadAllMetas = async () => {
+      const metas = {};
+      if (periodFilter === 'daily') {
+        const dailyData = apiData?.consumo_diario_mes_corrente || [];
+        for (let dayIndex = 0; dayIndex < dailyData.length; dayIndex++) {
+          const meta = await loadActivationTimeMeta(selectedDeviceId, 'daily', dayIndex);
+          metas[`daily_${dayIndex}`] = meta;
+        }
+      } else {
+        for (let monthIndex = 0; monthIndex <= currentMonthIndex; monthIndex++) {
+          const meta = await loadActivationTimeMeta(selectedDeviceId, 'monthly', monthIndex);
+          metas[`monthly_${monthIndex}`] = meta;
+        }
+      }
+      setAllActivationMetas(metas);
+    };
+    loadAllMetas();
+  }, [selectedDeviceId, periodFilter, currentMonthIndex, apiData]);
+
   const handleCostInputChange = (e) => {
     setCostInputValue(e.target.value);
   };
