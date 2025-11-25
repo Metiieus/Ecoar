@@ -198,11 +198,16 @@ export const saveMeta = async (deviceId, filterType, periodIndex, value) => {
  * Load activation meta from database
  */
 export const loadActivationMeta = async (deviceId, filterType, periodIndex) => {
-  await initializeSQL();
-
   try {
+    await initializeSQL();
+
+    if (!db) {
+      console.error('Database not initialized');
+      return filterType === 'daily' ? 24 : 720;
+    }
+
     const stmt = db.prepare(`
-      SELECT value FROM activation_meta 
+      SELECT value FROM activation_meta
       WHERE device_id = ? AND filter_type = ? AND period_index = ?
     `);
 
@@ -210,39 +215,56 @@ export const loadActivationMeta = async (deviceId, filterType, periodIndex) => {
 
     if (stmt.step()) {
       const row = stmt.getAsObject();
+      const value = row.value;
       stmt.free();
-      return row.value;
+      console.log(`⏱️ Activation meta loaded: device ${deviceId}, ${filterType}, index ${periodIndex} = ${value}h`);
+      return value;
     }
 
     stmt.free();
   } catch (error) {
-    console.error('Erro ao carregar meta de ativação:', error);
+    console.error('Error loading activation meta:', error);
   }
 
   // Default values
-  return filterType === 'daily' ? 24 : 720;
+  const defaultValue = filterType === 'daily' ? 24 : 720;
+  console.log(`⏱️ Activation meta not found, returning default: ${defaultValue}h`);
+  return defaultValue;
 };
 
 /**
  * Save activation meta to database
  */
 export const saveActivationMeta = async (deviceId, filterType, periodIndex, value) => {
-  await initializeSQL();
-
   try {
+    await initializeSQL();
+
+    if (!db) {
+      console.error('Database not initialized, cannot save activation meta');
+      return false;
+    }
+
+    const numValue = parseFloat(value);
+    if (isNaN(numValue) || numValue < 0) {
+      console.error('Invalid activation meta value:', value);
+      return false;
+    }
+
     const stmt = db.prepare(`
       INSERT OR REPLACE INTO activation_meta (device_id, filter_type, period_index, value, updated_at)
       VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)
     `);
 
-    stmt.bind([String(deviceId), filterType, periodIndex, parseFloat(value)]);
+    stmt.bind([String(deviceId), filterType, periodIndex, numValue]);
     stmt.step();
     stmt.free();
 
     saveDatabase();
-    console.log(`⏱️ Meta de tempo salva no SQLite para dispositivo ${deviceId}:`, value);
+    console.log(`✅ Activation meta saved: device ${deviceId}, ${filterType}, index ${periodIndex} = ${numValue}h`);
+    return true;
   } catch (error) {
-    console.error('Erro ao salvar meta de ativação:', error);
+    console.error('Error saving activation meta:', error);
+    return false;
   }
 };
 
