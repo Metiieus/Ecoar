@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "homepage": "https://metiieus.github.io/ecoarenergy-dashboard",
+  "homepage": "https://metiieus.github.io/Ecoar/",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
