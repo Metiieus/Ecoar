@@ -3,32 +3,58 @@ import initSqlJs from 'sql.js';
 let SQL = null;
 let db = null;
 const DB_STORAGE_KEY = 'ecoar_sqlite_db';
+let initPromise = null;
 
 /**
- * Initialize SQLite database
+ * Initialize SQLite database with proper error handling
  */
 export const initializeSQL = async () => {
+  // Return existing promise if already initializing
+  if (initPromise) {
+    return initPromise;
+  }
+
+  // Return existing database if already initialized
   if (SQL && db) {
     return db;
   }
 
-  if (!SQL) {
-    SQL = await initSqlJs();
-  }
+  initPromise = (async () => {
+    try {
+      if (!SQL) {
+        SQL = await initSqlJs();
+      }
 
-  // Try to load existing database from localStorage
-  const savedData = localStorage.getItem(DB_STORAGE_KEY);
-  
-  if (savedData) {
-    const data = new Uint8Array(JSON.parse(savedData));
-    db = new SQL.Database(data);
-  } else {
-    db = new SQL.Database();
-    // Create tables if new database
-    createTables();
-  }
+      // Try to load existing database from localStorage
+      const savedData = localStorage.getItem(DB_STORAGE_KEY);
 
-  return db;
+      if (savedData) {
+        try {
+          const data = new Uint8Array(JSON.parse(savedData));
+          db = new SQL.Database(data);
+          console.log('✅ Database loaded from localStorage');
+        } catch (parseError) {
+          console.warn('Error parsing saved database, creating new one:', parseError);
+          db = new SQL.Database();
+          createTables();
+        }
+      } else {
+        db = new SQL.Database();
+        // Create tables if new database
+        createTables();
+        console.log('✅ New database created');
+      }
+
+      return db;
+    } catch (error) {
+      console.error('Critical error initializing database:', error);
+      throw error;
+    } finally {
+      initPromise = null;
+    }
+  })();
+
+  return initPromise;
 };
 
 /**
@@ -65,25 +91,50 @@ const createTables = () => {
 };
 
 /**
- * Save database to localStorage
+ * Save database to localStorage with error handling
  */
 const saveDatabase = () => {
-  if (!db) return;
-  
-  const data = db.export();
-  const arr = Array.from(data);
-  localStorage.setItem(DB_STORAGE_KEY, JSON.stringify(arr));
+  if (!db) {
+    console.warn('Cannot save database: db is null');
+    return;
+  }
+
+  try {
+    const data = db.export();
+    const arr = Array.from(data);
+    const jsonStr = JSON.stringify(arr);
+
+    // Check localStorage size
+    const sizeInKB = jsonStr.length / 1024;
+    if (sizeInKB > 5000) {
+      console.warn(`Database size is large (${sizeInKB.toFixed(2)} KB), consider archiving old data`);
+    }
+
+    localStorage.setItem(DB_STORAGE_KEY, jsonStr);
+    console.log(`✅ Database saved to localStorage (${sizeInKB.toFixed(2)} KB)`);
+  } catch (error) {
+    console.error('Error saving database to localStorage:', error);
+    // Check if it's a quota exceeded error
+    if (error.name === 'QuotaExceededError') {
+      console.error('localStorage quota exceeded. Try clearing old data.');
+    }
+  }
 };
 
 /**
  * Load meta from database
  */
 export const loadMeta = async (deviceId, filterType, periodIndex) => {
-  await initializeSQL();
-
   try {
+    await initializeSQL();
+
+    if (!db) {
+      console.error('Database not initialized');
+      return 10000;
+    }
+
     const stmt = db.prepare(`
-      SELECT value FROM meta 
+      SELECT value FROM meta
       WHERE device_id = ? AND filter_type = ? AND period_index = ?
     `);
 
@@ -91,16 +142,19 @@ export const loadMeta = async (deviceId, filterType, periodIndex) => {
 
     if (stmt.step()) {
       const row = stmt.getAsObject();
+      const value = row.value;
       stmt.free();
-      return row.value;
+      console.log(`📚 Meta loaded from database: device ${deviceId}, ${filterType}, index ${periodIndex} = ${value}`);
+      return value;
     }
 
     stmt.free();
   } catch (error) {
-    console.error('Erro ao carregar meta:', error);
+    console.error('Error loading meta:', error);
   }
 
   // Default value if not found
+  console.log(`📚 Meta not found, returning default: device ${deviceId}, ${filterType}, index ${periodIndex}`);
   return 10000;
 };
 
@@ -108,22 +162,35 @@ export const loadMeta = async (deviceId, filterType, periodIndex) => {
  * Save meta to database
  */
 export const saveMeta = async (deviceId, filterType, periodIndex, value) => {
-  await initializeSQL();
-
   try {
+    await initializeSQL();
+
+    if (!db) {
+      console.error('Database not initialized, cannot save meta');
+      return false;
+    }
+
+    const numValue = parseFloat(value);
+    if (isNaN(numValue) || numValue < 0) {
+      console.error('Invalid meta value:', value);
+      return false;
+    }
+
     const stmt = db.prepare(`
       INSERT OR REPLACE INTO meta (device_id, filter_type, period_index, value, updated_at)
       VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)
     `);
 
-    stmt.bind([String(deviceId), filterType, periodIndex, parseFloat(value)]);
+    stmt.bind([String(deviceId), filterType, periodIndex, numValue]);
     stmt.step();
     stmt.free();
 
     saveDatabase();
-    console.log(`📊 Meta salva no SQLite para dispositivo ${deviceId}:`, value);
+    console.log(`✅ Meta saved to database: device ${deviceId}, ${filterType}, index ${periodIndex} = ${numValue}`);
+    return true;
   } catch (error) {
-    console.error('Erro ao salvar meta:', error);
+    console.error('Error saving meta:', error);
+    return false;
   }
 };
 
@@ -131,11 +198,16 @@ export const saveMeta = async (deviceId, filterType, periodIndex, value) => {
  * Load activation meta from database
  */
 export const loadActivationMeta = async (deviceId, filterType, periodIndex) => {
-  await initializeSQL();
-
   try {
+    await initializeSQL();
+
+    if (!db) {
+      console.error('Database not initialized');
+      return filterType === 'daily' ? 24 : 720;
+    }
+
     const stmt = db.prepare(`
-      SELECT value FROM activation_meta 
+      SELECT value FROM activation_meta
       WHERE device_id = ? AND filter_type = ? AND period_index = ?
     `);
 
@@ -143,39 +215,56 @@ export const loadActivationMeta = async (deviceId, filterType, periodIndex) => {
 
     if (stmt.step()) {
       const row = stmt.getAsObject();
+      const value = row.value;
       stmt.free();
-      return row.value;
+      console.log(`⏱️ Activation meta loaded: device ${deviceId}, ${filterType}, index ${periodIndex} = ${value}h`);
+      return value;
     }
 
     stmt.free();
   } catch (error) {
-    console.error('Erro ao carregar meta de ativação:', error);
+    console.error('Error loading activation meta:', error);
   }
 
   // Default values
-  return filterType === 'daily' ? 24 : 720;
+  const defaultValue = filterType === 'daily' ? 24 : 720;
+  console.log(`⏱️ Activation meta not found, returning default: ${defaultValue}h`);
+  return defaultValue;
 };
 
 /**
  * Save activation meta to database
  */
 export const saveActivationMeta = async (deviceId, filterType, periodIndex, value) => {
-  await initializeSQL();
-
   try {
+    await initializeSQL();
+
+    if (!db) {
+      console.error('Database not initialized, cannot save activation meta');
+      return false;
+    }
+
+    const numValue = parseFloat(value);
+    if (isNaN(numValue) || numValue < 0) {
+      console.error('Invalid activation meta value:', value);
+      return false;
+    }
+
     const stmt = db.prepare(`
       INSERT OR REPLACE INTO activation_meta (device_id, filter_type, period_index, value, updated_at)
       VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)
     `);
 
-    stmt.bind([String(deviceId), filterType, periodIndex, parseFloat(value)]);
+    stmt.bind([String(deviceId), filterType, periodIndex, numValue]);
     stmt.step();
     stmt.free();
 
     saveDatabase();
-    console.log(`⏱️ Meta de tempo salva no SQLite para dispositivo ${deviceId}:`, value);
+    console.log(`✅ Activation meta saved: device ${deviceId}, ${filterType}, index ${periodIndex} = ${numValue}h`);
+    return true;
   } catch (error) {
-    console.error('Erro ao salvar meta de ativação:', error);
+    console.error('Error saving activation meta:', error);
+    return false;
   }
 };
 

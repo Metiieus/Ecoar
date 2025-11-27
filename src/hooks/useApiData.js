@@ -57,6 +57,30 @@ export const useApiData = (deviceId = 33, includeHistory = true) => {
 
         const apiData = await response.json();
 
+        // Validate API data structure
+        const requiredArrays = [
+          'consumo_mensal',
+          'consumo_diario_mes_corrente',
+          'consumo_sem_sistema_mensal',
+          'consumo_sem_sistema_diario',
+          'minutos_desligado_mensal',
+          'minutos_desligado_diario'
+        ];
+
+        let dataIsValid = true;
+        for (const arrayName of requiredArrays) {
+          if (!Array.isArray(apiData[arrayName])) {
+            console.warn(`Device ${deviceId}: Missing or invalid array ${arrayName}`);
+            dataIsValid = false;
+          }
+        }
+
+        if (dataIsValid) {
+          console.log(`✅ Device ${deviceId}: All required data arrays present`);
+        } else {
+          console.warn(`⚠️ Device ${deviceId}: Some data arrays are missing or invalid`);
+        }
+
         // Enrich API data with calculated fields for consumption without system
         // Prefer API-provided "consumo_sem_sistema" arrays when they contain meaningful values.
         // Otherwise, derive them from consumo_mensal / consumo_diario_mes_corrente without rounding
@@ -74,7 +98,12 @@ export const useApiData = (deviceId = 33, includeHistory = true) => {
         };
 
         setData(enrichedData);
-        console.log('📊 Enriched API Data:', enrichedData);
+        console.log(`📊 Device ${deviceId} enriched API data loaded:`, {
+          monthlyPoints: enrichedData.consumo_mensal?.length || 0,
+          dailyPoints: enrichedData.consumo_diario_mes_corrente?.length || 0,
+          hasApiMonthlyWithout,
+          hasApiDailyWithout
+        });
       } catch (err) {
         console.warn('Erro ao buscar dados da API:', err.message);
         console.warn('URL tentada:', urlString);
