@@ -226,7 +226,7 @@ export const getActivationHours = (apiData, filterType, periodIndex) => {
   return Math.max(0, 720 - downtimeMinutes / 60);
 };
 
-import { loadMeta, saveMeta, loadActivationMeta, saveActivationMeta } from './sqliteDatabase.js';
+import { loadMeta, saveMeta, loadActivationMeta, saveActivationMeta } from './metaStorage.js';
 
 /**
  * Load meta from SQLite database for a device
