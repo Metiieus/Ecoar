@@ -326,6 +326,17 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
     return filteredConsumptionData[selectedPeriodIndex] || filteredConsumptionData[0];
   }, [filteredConsumptionData, selectedPeriodIndex]);
 
+  // Calculate monthly economy percentage: (consumo_sem_sistema - consumo_com_sistema) / consumo_sem_sistema * 100
+  const monthlyEconomyPercentage = useMemo(() => {
+    if (!currentPeriodData) return 0;
+    const consumoWithoutSystem = currentPeriodData.consumo || 0;
+    const consumoWithSystem = currentPeriodData.consumoSemSistema || 0;
+    const economy = Math.max(0, consumoWithoutSystem - consumoWithSystem);
+
+    if (consumoWithoutSystem === 0) return 0;
+    return (economy / consumoWithoutSystem) * 100;
+  }, [currentPeriodData]);
+
   // Economic pie data
   const economyPieData = useMemo(() => {
     const consumoWithoutSystem = currentPeriodData?.consumo || 0;
@@ -784,15 +795,10 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
 
           {/* Redução Mensal Card */}
           {(periodFilter === 'monthly' || periodFilter === 'daily') && (
-            <div className={`bg-gradient-to-br rounded-lg p-5 shadow-md border text-white flex flex-col justify-center hover:shadow-lg transition-shadow h-fit ${
-              monthlyReduction.percentChange >= 0
-                ? 'border-[#10b981]/20'
-                : 'from-red-500 to-red-600 border-red-700/20'
-            }`}
-            style={monthlyReduction.percentChange >= 0 ? { background: '#10b981' } : undefined}>
-              <p className="text-3xl font-bold mb-1 text-center">{Math.abs(monthlyReduction.percentChange).toFixed(1)}%</p>
+            <div className="bg-gradient-to-br from-[#10b981] to-[#059669] rounded-lg p-5 shadow-md border border-[#10b981]/20 text-white flex flex-col justify-center hover:shadow-lg transition-shadow h-fit">
+              <p className="text-3xl font-bold mb-1 text-center">{monthlyEconomyPercentage.toFixed(1)}%</p>
               <p className="text-xs font-semibold text-center leading-tight">
-                {monthlyReduction.percentChange >= 0 ? '↓ Redução' : '↑ Aumento'} Mensal
+                ↓ Redução Mensal
               </p>
             </div>
           )}
