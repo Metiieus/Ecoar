@@ -459,6 +459,10 @@ export const clearDatabase = async () => {
   }
 };
 
-// Initialize database on module load
+// Initialize database on module load (but don't block if it fails)
 console.log('📖 Initializing SQLite database module...');
-initializeSQL().catch(err => console.error('⚠️ Database initialization deferred until first use:', err));
+initializeSQL().then(() => {
+  console.log('✅ SQLite database module initialized successfully');
+}).catch(err => {
+  console.warn('⚠️ Database initialization deferred until first use:', err);
+});
