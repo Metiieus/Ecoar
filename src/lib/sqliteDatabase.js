@@ -184,10 +184,10 @@ const saveDatabase = () => {
       console.warn(`Database size is large (${sizeInKB.toFixed(2)} KB), consider archiving old data`);
     }
 
-    // Verify localStorage is available
-    if (!localStorage) {
-      console.error('localStorage is not available');
-      return false;
+    // Check if localStorage is available
+    if (!canUseLocalStorage) {
+      console.warn('⚠️ localStorage is not available (private browsing or restricted environment). Database changes will not persist across page reloads.');
+      return true; // Return true since the in-memory database was updated successfully
     }
 
     localStorage.setItem(DB_STORAGE_KEY, jsonStr);
@@ -200,13 +200,19 @@ const saveDatabase = () => {
       console.error('localStorage quota exceeded. Try clearing old data.');
       // Try to clear and retry
       try {
-        localStorage.removeItem(DB_STORAGE_KEY);
-        console.log('Cleared old database data, please try again');
+        if (canUseLocalStorage) {
+          localStorage.removeItem(DB_STORAGE_KEY);
+          console.log('Cleared old database data, please try again');
+        }
       } catch (clearError) {
         console.error('Failed to clear localStorage:', clearError);
       }
+    } else if (error.message && error.message.includes('QuotaExceededError')) {
+      console.error('Storage quota exceeded.');
     }
-    return false;
+    // Return true since the in-memory database was successfully updated
+    // even if we couldn't persist it to localStorage
+    return true;
   }
 };
 
