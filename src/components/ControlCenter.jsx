@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Clock, Target, AlertCircle, CheckCircle, TrendingUp } from 'lucide-react';
 import { deviceRankings } from '../data/mockData';
+import DataValidationPanel from './DataValidationPanel';
 
 const ControlCenter = () => {
   const [executionTimeGoals, setExecutionTimeGoals] = useState({});
