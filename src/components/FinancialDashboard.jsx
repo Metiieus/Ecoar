@@ -737,7 +737,7 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
             </div>
           </div>
 
-          {/* Redução Card */}
+          {/* Redução Mensal Card */}
           {(periodFilter === 'monthly' || periodFilter === 'daily') && (
             <div className={`bg-gradient-to-br rounded-lg p-5 shadow-md border text-white flex flex-col justify-center hover:shadow-lg transition-shadow h-fit ${
               periodReduction.percentChange >= 0
@@ -747,7 +747,7 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
             style={periodReduction.percentChange >= 0 ? { background: '#10b981' } : undefined}>
               <p className="text-3xl font-bold mb-1 text-center">{Math.abs(periodReduction.percentChange).toFixed(1)}%</p>
               <p className="text-xs font-semibold text-center leading-tight">
-                {periodReduction.percentChange >= 0 ? '↓ Redução' : '↑ Aumento'} {periodFilter === 'daily' ? 'Diária' : 'Mensal'}
+                {periodReduction.percentChange >= 0 ? '↓ Redução' : '↑ Aumento'} Mensal
               </p>
             </div>
           )}
