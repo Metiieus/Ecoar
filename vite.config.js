@@ -17,12 +17,12 @@ export default defineConfig({
   plugins: [
     react(), 
     tailwindcss(),
-    // 🔧 CORREÇÃO: Copiar arquivos WASM do sql.js para a pasta de distribuição
+    // 🔧 CORREÇÃO: Copiar arquivos WASM do sql.js para a raiz do dist
     viteStaticCopy({
       targets: [
         {
           src: 'node_modules/sql.js/dist/sql-wasm.wasm',
-          dest: 'assets'
+          dest: ''
         }
       ]
     })
