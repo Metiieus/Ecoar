@@ -203,18 +203,28 @@ export const saveMeta = async (deviceId, filterType, periodIndex, value) => {
       return false;
     }
 
-    const stmt = db.prepare(`
-      INSERT OR REPLACE INTO meta (device_id, filter_type, period_index, value, updated_at)
-      VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)
-    `);
+    try {
+      const stmt = db.prepare(`
+        INSERT OR REPLACE INTO meta (device_id, filter_type, period_index, value, updated_at)
+        VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)
+      `);
 
-    stmt.bind([String(deviceId), filterType, periodIndex, numValue]);
-    const executeResult = stmt.step();
-    stmt.free();
+      stmt.bind([String(deviceId), filterType, periodIndex, numValue]);
+      stmt.step();
+      stmt.free();
+    } catch (stmtError) {
+      console.error('Error executing INSERT statement:', stmtError);
+      return false;
+    }
 
-    const saved = saveDatabase();
-    if (!saved) {
-      console.error('Failed to save database to localStorage');
+    try {
+      const saved = saveDatabase();
+      if (!saved) {
+        console.error('Failed to save database to localStorage');
+        return false;
+      }
+    } catch (saveError) {
+      console.error('Error during database save:', saveError);
       return false;
     }
 
@@ -282,18 +292,28 @@ export const saveActivationMeta = async (deviceId, filterType, periodIndex, valu
       return false;
     }
 
-    const stmt = db.prepare(`
-      INSERT OR REPLACE INTO activation_meta (device_id, filter_type, period_index, value, updated_at)
-      VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)
-    `);
+    try {
+      const stmt = db.prepare(`
+        INSERT OR REPLACE INTO activation_meta (device_id, filter_type, period_index, value, updated_at)
+        VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)
+      `);
 
-    stmt.bind([String(deviceId), filterType, periodIndex, numValue]);
-    const executeResult = stmt.step();
-    stmt.free();
+      stmt.bind([String(deviceId), filterType, periodIndex, numValue]);
+      stmt.step();
+      stmt.free();
+    } catch (stmtError) {
+      console.error('Error executing INSERT statement:', stmtError);
+      return false;
+    }
 
-    const saved = saveDatabase();
-    if (!saved) {
-      console.error('Failed to save activation meta to localStorage');
+    try {
+      const saved = saveDatabase();
+      if (!saved) {
+        console.error('Failed to save activation meta to localStorage');
+        return false;
+      }
+    } catch (saveError) {
+      console.error('Error during database save:', saveError);
       return false;
     }
 
