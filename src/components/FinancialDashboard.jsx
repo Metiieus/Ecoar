@@ -642,6 +642,19 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
             </p>
           </div>
 
+          {/* Redução Mensal Card */}
+          <div className={`bg-gradient-to-br rounded-lg p-5 shadow-md border text-white flex flex-col justify-center hover:shadow-lg transition-shadow h-fit ${
+            monthlyReduction.percentChange >= 0
+              ? 'border-[#10b981]/20'
+              : 'from-red-500 to-red-600 border-red-700/20'
+          }`}
+          style={monthlyReduction.percentChange >= 0 ? { background: '#10b981' } : undefined}>
+            <p className="text-3xl font-bold mb-1 text-center">{Math.abs(monthlyReduction.percentChange).toFixed(1)}%</p>
+            <p className="text-xs font-semibold text-center leading-tight">
+              {monthlyReduction.percentChange >= 0 ? '↓ Redução' : '↑ Aumento'} Mensal
+            </p>
+          </div>
+
           {/* Ocupação Card */}
           <div className="bg-white rounded-lg p-4 shadow-md border border-[#E8DCC8] hover:shadow-lg transition-shadow">
             <div className="flex items-center justify-between mb-2">
@@ -811,7 +824,7 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
         {/* Large Graph Section */}
         <div className="col-span-1 lg:col-span-2 bg-white rounded-lg p-6 shadow-md border border-[#E8DCC8] hover:shadow-lg transition-shadow">
           <h3 className="text-sm font-bold text-gray-900 mb-1">
-            Gr��fico {periodFilter === 'monthly' ? 'Mensal' : 'Diário'}
+            Gráfico {periodFilter === 'monthly' ? 'Mensal' : 'Diário'}
           </h3>
           <p className="text-xs text-gray-500 mb-3">
             {periodFilter === 'monthly' ? 'Consumo para o Ano Atual' : 'Consumo para o Mês Atual'}
