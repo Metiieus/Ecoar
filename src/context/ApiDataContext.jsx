@@ -16,7 +16,8 @@ const validateDeviceData = (deviceId, data) => {
     'consumo_sem_sistema_diario',
     'minutos_desligado_mensal',
     'minutos_desligado_diario',
-    'ocupacao_mensal'
+    'ocupacao_mensal',
+    'ocupacao_diaria'
   ];
 
   for (const arrayName of requiredArrays) {
@@ -141,7 +142,8 @@ export const ApiDataProvider = ({ children }) => {
         consumo_sem_sistema_diario: [],
         minutos_desligado_mensal: [],
         minutos_desligado_diario: [],
-        ocupacao_mensal: []
+        ocupacao_mensal: [],
+        ocupacao_diaria: []
       };
     }
 
@@ -152,7 +154,8 @@ export const ApiDataProvider = ({ children }) => {
       consumo_sem_sistema_diario: Array(31).fill(0),
       minutos_desligado_mensal: Array(12).fill(0),
       minutos_desligado_diario: Array(31).fill(0),
-      ocupacao_mensal: Array(12).fill(0)
+      ocupacao_mensal: Array(12).fill(0),
+      ocupacao_diaria: Array(31).fill(0)
     };
 
     // Sum data from all devices
@@ -196,6 +199,12 @@ export const ApiDataProvider = ({ children }) => {
       if (deviceData.ocupacao_mensal) {
         deviceData.ocupacao_mensal.forEach((val, idx) => {
           aggregated.ocupacao_mensal[idx] = (aggregated.ocupacao_mensal[idx] || 0) + (Number(val) || 0);
+        });
+      }
+
+      if (deviceData.ocupacao_diaria) {
+        deviceData.ocupacao_diaria.forEach((val, idx) => {
+          aggregated.ocupacao_diaria[idx] = (aggregated.ocupacao_diaria[idx] || 0) + (Number(val) || 0);
         });
       }
     });

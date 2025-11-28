@@ -234,26 +234,18 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
   }, [filteredConsumptionData, periodFilter, selectedPeriodIndex]);
 
   // Calculate total economy (for selected period)
-  // Economy = consumo_without_system - consumo_with_system
+  // Economy = sum of consumo_sem_sistema
   const totalEconomy = useMemo(() => {
     if (!Array.isArray(filteredConsumptionData) || filteredConsumptionData.length === 0) return 0;
 
     if (periodFilter === 'daily') {
-      // For daily, sum all days in the current month
-      const consumoWithoutSystem = filteredConsumptionData.reduce((sum, item) => sum + item.consumo, 0);
-      const consumoWithSystem = filteredConsumptionData.reduce((sum, item) => sum + item.consumoSemSistema, 0);
-      return Math.max(0, consumoWithoutSystem - consumoWithSystem);
+      // For daily, sum all consumoSemSistema in the current month
+      return filteredConsumptionData.reduce((sum, item) => sum + (item.consumoSemSistema || 0), 0);
     }
 
-    // For monthly, use only the selected month
-    const periodData = filteredConsumptionData[selectedPeriodIndex];
-    if (periodData) {
-      const consumoWithoutSystem = periodData.consumo || 0;
-      const consumoWithSystem = periodData.consumoSemSistema > 0 ? (periodData.consumoSemSistema || 0) : 0;
-      return Math.max(0, consumoWithoutSystem - consumoWithSystem);
-    }
-    return 0;
-  }, [filteredConsumptionData, periodFilter, selectedPeriodIndex]);
+    // For monthly, sum ALL months of consumo_sem_sistema_mensal
+    return filteredConsumptionData.reduce((sum, item) => sum + (item.consumoSemSistema || 0), 0);
+  }, [filteredConsumptionData, periodFilter]);
 
   // Calculate economy rate
   const economyRate = useMemo(() => {
@@ -264,6 +256,15 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
   const previousPeriodComparison = useMemo(() => {
     return getComparisonWithPreviousPeriod(filteredConsumptionData, periodFilter, selectedPeriodIndex);
   }, [filteredConsumptionData, periodFilter, selectedPeriodIndex]);
+
+  // Get monthly reduction (only used when in monthly view, should match previousPeriodComparison)
+  const monthlyReduction = useMemo(() => {
+    // Only calculate for monthly view and use the same logic as previousPeriodComparison
+    if (periodFilter !== 'monthly') {
+      return { percentChange: 0, currentValue: 0, previousValue: 0 };
+    }
+    return previousPeriodComparison;
+  }, [periodFilter, previousPeriodComparison]);
 
   // Get activation hours
   const activationHours = useMemo(() => {
@@ -626,25 +627,21 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
             </p>
           </div>
 
-          {/* Economia Total R$ Card */}
-          <div className="bg-gradient-to-br from-[#A3B18A] to-[#1F4532] rounded-lg p-5 shadow-md border border-[#1F4532]/20 text-white flex flex-col justify-center hover:shadow-lg transition-shadow h-fit">
-            <p className="text-3xl font-bold mb-1 text-center">{periodFilter === 'daily' ? activationHours.toFixed(1) : totalEconomy.toFixed(0)}</p>
-            <p className="text-xs font-semibold text-center leading-tight text-[#F0EAD2]">
-              {periodFilter === 'daily' ? 'Horas de Atuação' : 'Economia Total (R$)'}
-            </p>
-          </div>
-
-          {/* Ocupação Mensal Card */}
-          <div className="bg-white rounded-lg p-4 shadow-md border border-[#E8DCC8] hover:shadow-lg transition-shadow">
+          {/* Ocupação Card */}
+          <div className="bg-gradient-to-br from-[#1F4532] to-[#2D5740] rounded-lg p-4 shadow-md border border-[#1F4532]/20 hover:shadow-lg transition-shadow">
             <div className="flex items-center justify-between mb-2">
-              <p className="text-xs font-bold text-[#6B7560] uppercase tracking-wide">Ocupação Mensal</p>
+              <p className="text-xs font-bold text-[#F0EAD2] uppercase tracking-wide">
+                {periodFilter === 'daily' ? 'Ocupação Diária' : 'Ocupação Mensal'}
+              </p>
               <Zap className="w-4 h-4 text-[#A3B18A]" />
             </div>
-            <p className="text-2xl font-bold text-[#1F4532] mb-2">
-              {apiData?.ocupacao_mensal ? apiData.ocupacao_mensal[selectedPeriodIndex]?.toFixed(1) || 0 : 0}%
+            <p className="text-2xl font-bold text-[#F0EAD2] mb-2">
+              {periodFilter === 'daily'
+                ? apiData?.ocupacao_diaria ? apiData.ocupacao_diaria[selectedPeriodIndex]?.toFixed(1) || 0 : 0
+                : apiData?.ocupacao_mensal ? apiData.ocupacao_mensal[selectedPeriodIndex]?.toFixed(1) || 0 : 0}%
             </p>
-            <p className="text-xs text-gray-500">
-              {periodFilter === 'monthly' ? monthNames[selectedPeriodIndex] : `Período: ${monthNames[Math.floor(new Date().getMonth())]}`}
+            <p className="text-xs text-[#D4CFC0]">
+              {periodFilter === 'monthly' ? monthNames[selectedPeriodIndex] : `Dia ${selectedPeriodIndex + 1}`}
             </p>
           </div>
         </div>
@@ -691,55 +688,73 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
           </div>
         </div>
 
-        {/* Período Selecionado Card */}
-        <div className="bg-gradient-to-br from-blue-50 to-white rounded-lg p-4 shadow-md border border-blue-200 hover:shadow-lg transition-shadow h-fit col-span-1 lg:col-span-2">
-          <div className="flex items-center justify-between mb-2">
-            <p className="text-xs font-bold text-blue-700 uppercase tracking-wide">
-              {periodFilter === 'daily' ? `Dia ${selectedPeriodIndex + 1}` : monthNames[selectedPeriodIndex]}
-            </p>
-            {periodFilter === 'daily' ? (
-              <input
-                type="range"
-                min="0"
-                max={filteredConsumptionData.length - 1}
-                value={selectedPeriodIndex}
-                onChange={(e) => handlePeriodIndexChange(parseInt(e.target.value))}
-                className="w-20"
-              />
-            ) : (
-              <select
-                value={selectedPeriodIndex}
-                onChange={(e) => handlePeriodIndexChange(parseInt(e.target.value))}
-                className="text-xs px-2 py-1 border border-blue-300 rounded bg-white text-[#1F4532] hover:border-blue-500 transition-colors appearance-none cursor-pointer"
-              >
-                {monthNames.map((name, index) => (
-                  <option key={index} value={String(index)}>{name}</option>
-                ))}
-              </select>
-            )}
-          </div>
-          <div className="mb-3 space-y-2">
-            <div>
-              <p className="text-xs text-[#6B7560] mb-1">Consumo sem Sistema</p>
-              <p className="text-2xl font-bold text-gray-900">
-                R${ensureNonNegative(currentPeriodData?.consumo || 0).toLocaleString('pt-BR')}
+        {/* Right Column - Período Selecionado and Redução Mensal */}
+        <div className="flex flex-col gap-4 col-span-1 lg:col-span-2">
+          {/* Período Selecionado Card */}
+          <div className="bg-gradient-to-br from-blue-50 to-white rounded-lg p-4 shadow-md border border-blue-200 hover:shadow-lg transition-shadow h-fit">
+            <div className="flex items-center justify-between mb-2">
+              <p className="text-xs font-bold text-blue-700 uppercase tracking-wide">
+                {periodFilter === 'daily' ? `Dia ${selectedPeriodIndex + 1}` : monthNames[selectedPeriodIndex]}
+              </p>
+              {periodFilter === 'daily' ? (
+                <input
+                  type="range"
+                  min="0"
+                  max={filteredConsumptionData.length - 1}
+                  value={selectedPeriodIndex}
+                  onChange={(e) => handlePeriodIndexChange(parseInt(e.target.value))}
+                  className="w-20"
+                />
+              ) : (
+                <select
+                  value={selectedPeriodIndex}
+                  onChange={(e) => handlePeriodIndexChange(parseInt(e.target.value))}
+                  className="text-xs px-2 py-1 border border-blue-300 rounded bg-white text-[#1F4532] hover:border-blue-500 transition-colors appearance-none cursor-pointer"
+                >
+                  {monthNames.map((name, index) => (
+                    <option key={index} value={String(index)}>{name}</option>
+                  ))}
+                </select>
+              )}
+            </div>
+            <div className="mb-3 space-y-2">
+              <div>
+                <p className="text-xs text-[#6B7560] mb-1">Consumo sem Sistema</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  R${ensureNonNegative(currentPeriodData?.consumo || 0).toLocaleString('pt-BR')}
+                </p>
+              </div>
+              <div className="border-t border-blue-200 pt-2">
+                <p className="text-xs text-[#6B7560] mb-1">Consumo com Sistema</p>
+                <p className="text-lg font-bold text-blue-600">
+                  R${ensureNonNegative(currentPeriodData?.consumoSemSistema || 0).toLocaleString('pt-BR')}
+                </p>
+              </div>
+            </div>
+            <div className="bg-blue-50/50 rounded p-2 space-y-1">
+              <p className="text-xs text-[#6B7560]">Meta: <span className="font-semibold text-gray-900">R${ensureNonNegative(currentMeta).toLocaleString('pt-BR')}</span></p>
+              <p className="text-xs text-[#6B7560]">
+                Economia: <span className="font-semibold text-[#1F4532]">
+                  R${ensureNonNegative((currentPeriodData?.consumo || 0) - (currentPeriodData?.consumoSemSistema || 0)).toLocaleString('pt-BR')}
+                </span>
               </p>
             </div>
-            <div className="border-t border-blue-200 pt-2">
-              <p className="text-xs text-[#6B7560] mb-1">Consumo com Sistema</p>
-              <p className="text-lg font-bold text-blue-600">
-                R${ensureNonNegative(currentPeriodData?.consumoSemSistema || 0).toLocaleString('pt-BR')}
+          </div>
+
+          {/* Redução Mensal Card */}
+          {periodFilter === 'monthly' && (
+            <div className={`bg-gradient-to-br rounded-lg p-5 shadow-md border text-white flex flex-col justify-center hover:shadow-lg transition-shadow h-fit ${
+              monthlyReduction.percentChange >= 0
+                ? 'border-[#10b981]/20'
+                : 'from-red-500 to-red-600 border-red-700/20'
+            }`}
+            style={monthlyReduction.percentChange >= 0 ? { background: '#10b981' } : undefined}>
+              <p className="text-3xl font-bold mb-1 text-center">{Math.abs(monthlyReduction.percentChange).toFixed(1)}%</p>
+              <p className="text-xs font-semibold text-center leading-tight">
+                {monthlyReduction.percentChange >= 0 ? '↓ Redução' : '↑ Aumento'} Mensal
               </p>
             </div>
-          </div>
-          <div className="bg-blue-50/50 rounded p-2 space-y-1">
-            <p className="text-xs text-[#6B7560]">Meta: <span className="font-semibold text-gray-900">R${ensureNonNegative(currentMeta).toLocaleString('pt-BR')}</span></p>
-            <p className="text-xs text-[#6B7560]">
-              Economia: <span className="font-semibold text-[#1F4532]">
-                R${ensureNonNegative((currentPeriodData?.consumo || 0) - (currentPeriodData?.consumoSemSistema || 0)).toLocaleString('pt-BR')}
-              </span>
-            </p>
-          </div>
+          )}
         </div>
       </div>
 

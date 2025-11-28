@@ -173,16 +173,13 @@ export const getComparisonWithPreviousPeriod = (
   const currentIndex = Math.min(currentPeriodIndex, filteredData.length - 1);
 
   if (filterType === 'daily') {
-    // Compare with day from previous month
-    const daysInCurrentMonth = filteredData.length;
-    const previousMonthIndex = currentIndex - daysInCurrentMonth;
-
-    if (previousMonthIndex < 0) {
+    // Compare with previous day
+    if (currentIndex < 1) {
       return { percentChange: 0, currentValue: 0, previousValue: 0 };
     }
 
     const currentValue = filteredData[currentIndex]?.consumo || 0;
-    const previousValue = filteredData[previousMonthIndex]?.consumo || 0;
+    const previousValue = filteredData[currentIndex - 1]?.consumo || 0;
 
     if (previousValue === 0) {
       return { percentChange: 0, currentValue, previousValue };
