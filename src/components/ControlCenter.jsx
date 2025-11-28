@@ -49,6 +49,9 @@ const ControlCenter = () => {
         <p className="text-gray-600">Monitore o status dos dispositivos e gerencie metas de tempo de execução</p>
       </div>
 
+      {/* Data Validation Panel */}
+      <DataValidationPanel />
+
       {/* Devices Status Grid */}
       <div className="space-y-4">
         <h3 className="text-lg font-bold text-gray-900">Status dos Dispositivos</h3>
