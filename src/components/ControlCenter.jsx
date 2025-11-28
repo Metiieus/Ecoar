@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Clock, Target, AlertCircle, CheckCircle, TrendingUp } from 'lucide-react';
 import { deviceRankings } from '../data/mockData';
+import DataValidationPanel from './DataValidationPanel';
 
 const ControlCenter = () => {
   const [executionTimeGoals, setExecutionTimeGoals] = useState({});
@@ -47,6 +48,9 @@ const ControlCenter = () => {
         <h2 className="text-2xl font-bold text-gray-900 mb-2">Central de Controle</h2>
         <p className="text-gray-600">Monitore o status dos dispositivos e gerencie metas de tempo de execução</p>
       </div>
+
+      {/* Data Validation Panel */}
+      <DataValidationPanel />
 
       {/* Devices Status Grid */}
       <div className="space-y-4">
