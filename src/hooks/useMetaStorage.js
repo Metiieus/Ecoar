@@ -73,10 +73,15 @@ export const useMetaStorage = (deviceId, periodFilter, selectedPeriodIndex) => {
     async (value) => {
       try {
         console.log(`💾 Saving activation meta: device ${deviceId}, ${periodFilter}, index ${selectedPeriodIndex}, value ${value}h`);
-        await saveActivationTimeMeta(deviceId, periodFilter, selectedPeriodIndex, value);
-        setCurrentTimeMeta(value);
-        console.log(`✅ Activation meta save callback completed`);
-        return true;
+        const result = await saveActivationTimeMeta(deviceId, periodFilter, selectedPeriodIndex, value);
+        if (result) {
+          setCurrentTimeMeta(value);
+          console.log(`✅ Activation meta save callback completed successfully`);
+          return true;
+        } else {
+          console.error('❌ Activation meta save callback failed - database returned false');
+          return false;
+        }
       } catch (error) {
         console.error('Error saving activation meta:', error);
         return false;
