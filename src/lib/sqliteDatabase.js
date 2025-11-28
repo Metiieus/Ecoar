@@ -11,18 +11,24 @@ let initPromise = null;
 export const initializeSQL = async () => {
   // Return existing promise if already initializing
   if (initPromise) {
+    console.log('📖 Database initialization already in progress, returning existing promise');
     return initPromise;
   }
 
   // Return existing database if already initialized
   if (SQL && db) {
+    console.log('📖 Database already initialized, returning existing instance');
     return db;
   }
+
+  console.log('📖 Starting database initialization...');
 
   initPromise = (async () => {
     try {
       if (!SQL) {
+        console.log('📖 Loading SQL.js library...');
         SQL = await initSqlJs();
+        console.log('✅ SQL.js library loaded successfully');
       }
 
       // Try to load existing database from localStorage
@@ -30,24 +36,25 @@ export const initializeSQL = async () => {
 
       if (savedData) {
         try {
+          console.log('📖 Found saved database in localStorage, attempting to load...');
           const data = new Uint8Array(JSON.parse(savedData));
           db = new SQL.Database(data);
-          console.log('✅ Database loaded from localStorage');
+          console.log('✅ Database loaded from localStorage successfully');
         } catch (parseError) {
-          console.warn('Error parsing saved database, creating new one:', parseError);
+          console.warn('⚠️ Error parsing saved database, creating new one:', parseError);
           db = new SQL.Database();
           createTables();
         }
       } else {
+        console.log('📖 No saved database found, creating new one...');
         db = new SQL.Database();
-        // Create tables if new database
         createTables();
         console.log('✅ New database created');
       }
 
       return db;
     } catch (error) {
-      console.error('Critical error initializing database:', error);
+      console.error('❌ Critical error initializing database:', error);
       throw error;
     } finally {
       initPromise = null;
