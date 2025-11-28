@@ -257,6 +257,30 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
     return getComparisonWithPreviousPeriod(filteredConsumptionData, periodFilter, selectedPeriodIndex);
   }, [filteredConsumptionData, periodFilter, selectedPeriodIndex]);
 
+  // Get monthly reduction (always comparing months, not days)
+  const monthlyReduction = useMemo(() => {
+    if (!Array.isArray(apiData?.consumo_mensal) || apiData.consumo_mensal.length < 2) {
+      return { percentChange: 0, currentValue: 0, previousValue: 0 };
+    }
+
+    const currentMonthIdx = selectedPeriodIndex;
+    const previousMonthIdx = currentMonthIdx - 1;
+
+    if (previousMonthIdx < 0) {
+      return { percentChange: 0, currentValue: 0, previousValue: 0 };
+    }
+
+    const currentValue = apiData.consumo_mensal[currentMonthIdx] || 0;
+    const previousValue = apiData.consumo_mensal[previousMonthIdx] || 0;
+
+    if (previousValue === 0) {
+      return { percentChange: 0, currentValue, previousValue };
+    }
+
+    const percentChange = ((previousValue - currentValue) / previousValue) * 100;
+    return { percentChange, currentValue, previousValue };
+  }, [apiData?.consumo_mensal, selectedPeriodIndex]);
+
   // Get activation hours
   const activationHours = useMemo(() => {
     return getActivationHours(apiData, periodFilter, selectedPeriodIndex);
@@ -787,7 +811,7 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
         {/* Large Graph Section */}
         <div className="col-span-1 lg:col-span-2 bg-white rounded-lg p-6 shadow-md border border-[#E8DCC8] hover:shadow-lg transition-shadow">
           <h3 className="text-sm font-bold text-gray-900 mb-1">
-            Gráfico {periodFilter === 'monthly' ? 'Mensal' : 'Diário'}
+            Gr��fico {periodFilter === 'monthly' ? 'Mensal' : 'Diário'}
           </h3>
           <p className="text-xs text-gray-500 mb-3">
             {periodFilter === 'monthly' ? 'Consumo para o Ano Atual' : 'Consumo para o Mês Atual'}
