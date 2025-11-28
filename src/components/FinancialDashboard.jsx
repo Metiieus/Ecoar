@@ -257,10 +257,37 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
     return getComparisonWithPreviousPeriod(filteredConsumptionData, periodFilter, selectedPeriodIndex);
   }, [filteredConsumptionData, periodFilter, selectedPeriodIndex]);
 
+  // Get monthly data for reduction comparison (always use monthly data regardless of current filter)
+  const monthlyData = useMemo(() => {
+    if (!apiData || !Array.isArray(apiData.consumo_mensal)) return [];
+    return apiData.consumo_mensal.map((consumo, index) => {
+      const consumoVal = ensureNonNegative(consumo);
+      const consumoSemSistemaApi = apiData.consumo_sem_sistema_mensal?.[index];
+
+      let consumoSemSistemaVal;
+      if (consumoVal === 0) {
+        consumoSemSistemaVal = 0;
+      } else if (consumoSemSistemaApi !== undefined && consumoSemSistemaApi !== null && consumoSemSistemaApi !== 0) {
+        consumoSemSistemaVal = ensureNonNegative(consumoSemSistemaApi);
+      } else if (consumoSemSistemaApi === 0) {
+        consumoSemSistemaVal = 0;
+      } else {
+        consumoSemSistemaVal = ensureNonNegative(consumoVal / 0.8);
+      }
+
+      return {
+        period: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'][index],
+        index,
+        consumo: consumoVal,
+        consumoSemSistema: consumoSemSistemaVal
+      };
+    });
+  }, [apiData]);
+
   // Get monthly reduction (always compares current month with previous month)
   const monthlyReduction = useMemo(() => {
-    return getComparisonWithPreviousPeriod(filteredConsumptionData, 'monthly', selectedPeriodIndex);
-  }, [filteredConsumptionData, selectedPeriodIndex]);
+    return getComparisonWithPreviousPeriod(monthlyData, 'monthly', currentMonthIndex);
+  }, [monthlyData, currentMonthIndex]);
 
   // Get activation hours
   const activationHours = useMemo(() => {
