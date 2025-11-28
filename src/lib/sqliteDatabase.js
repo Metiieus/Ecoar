@@ -27,21 +27,35 @@ export const initializeSQL = async () => {
     try {
       if (!SQL) {
         console.log('📖 Loading SQL.js library...');
-        
-        // 🔧 CORREÇÃO: Usar caminho relativo simples
-        // O arquivo está em public/ para dev e será copiado para dist/ no build
-        SQL = await initSqlJs({
-          locateFile: file => {
-            console.log('📖 Locating WASM file:', file);
-            return `/${file}`;
-          }
-        });
-        
-        console.log('✅ SQL.js library loaded successfully');
+
+        try {
+          SQL = await initSqlJs({
+            locateFile: file => {
+              const filePath = `/${file}`;
+              console.log('📖 Locating WASM file:', file, '-> looking at:', filePath);
+              return filePath;
+            }
+          });
+          console.log('✅ SQL.js library loaded successfully');
+        } catch (sqlError) {
+          console.error('❌ Failed to load SQL.js library:', sqlError);
+          throw sqlError;
+        }
+      }
+
+      // Verify SQL is properly loaded
+      if (!SQL || typeof SQL.Database !== 'function') {
+        console.error('❌ SQL.js library not properly loaded');
+        throw new Error('SQL.js library not properly initialized');
       }
 
       // Try to load existing database from localStorage
-      const savedData = localStorage.getItem(DB_STORAGE_KEY);
+      let savedData = null;
+      try {
+        savedData = localStorage.getItem(DB_STORAGE_KEY);
+      } catch (localStorageError) {
+        console.warn('⚠️ Error accessing localStorage:', localStorageError);
+      }
 
       if (savedData) {
         try {
@@ -64,6 +78,8 @@ export const initializeSQL = async () => {
       return db;
     } catch (error) {
       console.error('❌ Critical error initializing database:', error);
+      db = null;
+      SQL = null;
       throw error;
     } finally {
       initPromise = null;
