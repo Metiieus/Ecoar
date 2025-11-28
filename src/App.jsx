@@ -12,13 +12,7 @@ import { ApiDataProvider, useApiDataContext } from './context/ApiDataContext';
 function AppContent() {
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
     // Verificar se há autenticação no localStorage
-    const authenticated = localStorage.getItem('isAuthenticated') === 'true';
-    if (!authenticated && !import.meta.env.PROD) {
-      localStorage.setItem('isAuthenticated', 'true');
-      localStorage.setItem('userEmail', 'dev@test.com');
-      return true;
-    }
-    return authenticated;
+    return localStorage.getItem('isAuthenticated') === 'true';
   });
   const [activeSidebarTab, setActiveSidebarTab] = useState('dashboard');
   const [selectedEstablishment, setSelectedEstablishment] = useState(1);
