@@ -257,10 +257,10 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
     return getComparisonWithPreviousPeriod(filteredConsumptionData, periodFilter, selectedPeriodIndex);
   }, [filteredConsumptionData, periodFilter, selectedPeriodIndex]);
 
-  // Get period reduction (used for both monthly and daily views)
-  const periodReduction = useMemo(() => {
-    return previousPeriodComparison;
-  }, [previousPeriodComparison]);
+  // Get monthly reduction (always compares current month with previous month)
+  const monthlyReduction = useMemo(() => {
+    return getComparisonWithPreviousPeriod(filteredConsumptionData, 'monthly', selectedPeriodIndex);
+  }, [filteredConsumptionData, selectedPeriodIndex]);
 
   // Get activation hours
   const activationHours = useMemo(() => {
@@ -740,14 +740,14 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
           {/* Redução Mensal Card */}
           {(periodFilter === 'monthly' || periodFilter === 'daily') && (
             <div className={`bg-gradient-to-br rounded-lg p-5 shadow-md border text-white flex flex-col justify-center hover:shadow-lg transition-shadow h-fit ${
-              periodReduction.percentChange >= 0
+              monthlyReduction.percentChange >= 0
                 ? 'border-[#10b981]/20'
                 : 'from-red-500 to-red-600 border-red-700/20'
             }`}
-            style={periodReduction.percentChange >= 0 ? { background: '#10b981' } : undefined}>
-              <p className="text-3xl font-bold mb-1 text-center">{Math.abs(periodReduction.percentChange).toFixed(1)}%</p>
+            style={monthlyReduction.percentChange >= 0 ? { background: '#10b981' } : undefined}>
+              <p className="text-3xl font-bold mb-1 text-center">{Math.abs(monthlyReduction.percentChange).toFixed(1)}%</p>
               <p className="text-xs font-semibold text-center leading-tight">
-                {periodReduction.percentChange >= 0 ? '↓ Redução' : '↑ Aumento'} Mensal
+                {monthlyReduction.percentChange >= 0 ? '↓ Redução' : '↑ Aumento'} Mensal
               </p>
             </div>
           )}
