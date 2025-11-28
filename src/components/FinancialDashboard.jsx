@@ -326,6 +326,17 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
     return filteredConsumptionData[selectedPeriodIndex] || filteredConsumptionData[0];
   }, [filteredConsumptionData, selectedPeriodIndex]);
 
+  // Calculate monthly economy percentage: (consumo_sem_sistema - consumo_com_sistema) / consumo_sem_sistema * 100
+  const monthlyEconomyPercentage = useMemo(() => {
+    if (!currentPeriodData) return 0;
+    const consumoWithoutSystem = currentPeriodData.consumo || 0;
+    const consumoWithSystem = currentPeriodData.consumoSemSistema || 0;
+    const economy = Math.max(0, consumoWithoutSystem - consumoWithSystem);
+
+    if (consumoWithoutSystem === 0) return 0;
+    return (economy / consumoWithoutSystem) * 100;
+  }, [currentPeriodData]);
+
   // Economic pie data
   const economyPieData = useMemo(() => {
     const consumoWithoutSystem = currentPeriodData?.consumo || 0;
