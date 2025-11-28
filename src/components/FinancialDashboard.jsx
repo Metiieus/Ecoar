@@ -257,29 +257,14 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
     return getComparisonWithPreviousPeriod(filteredConsumptionData, periodFilter, selectedPeriodIndex);
   }, [filteredConsumptionData, periodFilter, selectedPeriodIndex]);
 
-  // Get monthly reduction (always comparing months, not days)
+  // Get monthly reduction (only used when in monthly view, should match previousPeriodComparison)
   const monthlyReduction = useMemo(() => {
-    if (!Array.isArray(apiData?.consumo_mensal) || apiData.consumo_mensal.length < 2) {
+    // Only calculate for monthly view and use the same logic as previousPeriodComparison
+    if (periodFilter !== 'monthly') {
       return { percentChange: 0, currentValue: 0, previousValue: 0 };
     }
-
-    const currentMonthIdx = selectedPeriodIndex;
-    const previousMonthIdx = currentMonthIdx - 1;
-
-    if (previousMonthIdx < 0) {
-      return { percentChange: 0, currentValue: 0, previousValue: 0 };
-    }
-
-    const currentValue = apiData.consumo_mensal[currentMonthIdx] || 0;
-    const previousValue = apiData.consumo_mensal[previousMonthIdx] || 0;
-
-    if (previousValue === 0) {
-      return { percentChange: 0, currentValue, previousValue };
-    }
-
-    const percentChange = ((previousValue - currentValue) / previousValue) * 100;
-    return { percentChange, currentValue, previousValue };
-  }, [apiData?.consumo_mensal, selectedPeriodIndex]);
+    return previousPeriodComparison;
+  }, [periodFilter, previousPeriodComparison]);
 
   // Get activation hours
   const activationHours = useMemo(() => {
