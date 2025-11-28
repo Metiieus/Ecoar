@@ -191,6 +191,12 @@ export const ApiDataProvider = ({ children }) => {
           aggregated.minutos_desligado_diario[idx] = (aggregated.minutos_desligado_diario[idx] || 0) + (Number(val) || 0);
         });
       }
+
+      if (deviceData.ocupacao_mensal) {
+        deviceData.ocupacao_mensal.forEach((val, idx) => {
+          aggregated.ocupacao_mensal[idx] = (aggregated.ocupacao_mensal[idx] || 0) + (Number(val) || 0);
+        });
+      }
     });
 
     return aggregated;
