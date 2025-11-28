@@ -153,7 +153,8 @@ export const ApiDataProvider = ({ children }) => {
       consumo_sem_sistema_diario: Array(31).fill(0),
       minutos_desligado_mensal: Array(12).fill(0),
       minutos_desligado_diario: Array(31).fill(0),
-      ocupacao_mensal: Array(12).fill(0)
+      ocupacao_mensal: Array(12).fill(0),
+      ocupacao_diaria: Array(31).fill(0)
     };
 
     // Sum data from all devices
