@@ -308,11 +308,15 @@ export const loadActivationTimeMeta = async (deviceId, filterType, periodIndex) 
  * @param {String} filterType - 'daily' or 'monthly'
  * @param {Number} periodIndex - Period index
  * @param {Number} value - Activation time meta in hours
+ * @returns {Promise<boolean>} Success status
  */
 export const saveActivationTimeMeta = async (deviceId, filterType, periodIndex, value) => {
   try {
-    await saveActivationMeta(deviceId, filterType, periodIndex, value);
+    const result = await saveActivationMeta(deviceId, filterType, periodIndex, value);
+    console.log(`✅ saveActivationTimeMeta completed: ${result}`);
+    return result;
   } catch (error) {
     console.error('Erro ao salvar meta de ativação:', error);
+    return false;
   }
 };

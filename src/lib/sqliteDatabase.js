@@ -11,18 +11,24 @@ let initPromise = null;
 export const initializeSQL = async () => {
   // Return existing promise if already initializing
   if (initPromise) {
+    console.log('📖 Database initialization already in progress, returning existing promise');
     return initPromise;
   }
 
   // Return existing database if already initialized
   if (SQL && db) {
+    console.log('📖 Database already initialized, returning existing instance');
     return db;
   }
+
+  console.log('📖 Starting database initialization...');
 
   initPromise = (async () => {
     try {
       if (!SQL) {
+        console.log('📖 Loading SQL.js library...');
         SQL = await initSqlJs();
+        console.log('✅ SQL.js library loaded successfully');
       }
 
       // Try to load existing database from localStorage
@@ -30,24 +36,25 @@ export const initializeSQL = async () => {
 
       if (savedData) {
         try {
+          console.log('📖 Found saved database in localStorage, attempting to load...');
           const data = new Uint8Array(JSON.parse(savedData));
           db = new SQL.Database(data);
-          console.log('✅ Database loaded from localStorage');
+          console.log('✅ Database loaded from localStorage successfully');
         } catch (parseError) {
-          console.warn('Error parsing saved database, creating new one:', parseError);
+          console.warn('⚠️ Error parsing saved database, creating new one:', parseError);
           db = new SQL.Database();
           createTables();
         }
       } else {
+        console.log('📖 No saved database found, creating new one...');
         db = new SQL.Database();
-        // Create tables if new database
         createTables();
         console.log('✅ New database created');
       }
 
       return db;
     } catch (error) {
-      console.error('Critical error initializing database:', error);
+      console.error('❌ Critical error initializing database:', error);
       throw error;
     } finally {
       initPromise = null;
@@ -61,33 +68,42 @@ export const initializeSQL = async () => {
  * Create database tables
  */
 const createTables = () => {
-  db.run(`
-    CREATE TABLE IF NOT EXISTS meta (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      device_id TEXT NOT NULL,
-      filter_type TEXT NOT NULL,
-      period_index INTEGER NOT NULL,
-      value REAL NOT NULL,
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-      UNIQUE(device_id, filter_type, period_index)
-    )
-  `);
+  try {
+    db.run(`
+      CREATE TABLE IF NOT EXISTS meta (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        device_id TEXT NOT NULL,
+        filter_type TEXT NOT NULL,
+        period_index INTEGER NOT NULL,
+        value REAL NOT NULL,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE(device_id, filter_type, period_index)
+      )
+    `);
 
-  db.run(`
-    CREATE TABLE IF NOT EXISTS activation_meta (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      device_id TEXT NOT NULL,
-      filter_type TEXT NOT NULL,
-      period_index INTEGER NOT NULL,
-      value REAL NOT NULL,
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-      UNIQUE(device_id, filter_type, period_index)
-    )
-  `);
+    db.run(`
+      CREATE TABLE IF NOT EXISTS activation_meta (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        device_id TEXT NOT NULL,
+        filter_type TEXT NOT NULL,
+        period_index INTEGER NOT NULL,
+        value REAL NOT NULL,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE(device_id, filter_type, period_index)
+      )
+    `);
 
-  saveDatabase();
+    const saved = saveDatabase();
+    if (saved) {
+      console.log('✅ Database tables created successfully');
+    } else {
+      console.error('Failed to save database after creating tables');
+    }
+  } catch (error) {
+    console.error('Error creating database tables:', error);
+  }
 };
 
 /**
@@ -96,7 +112,7 @@ const createTables = () => {
 const saveDatabase = () => {
   if (!db) {
     console.warn('Cannot save database: db is null');
-    return;
+    return false;
   }
 
   try {
@@ -112,12 +128,14 @@ const saveDatabase = () => {
 
     localStorage.setItem(DB_STORAGE_KEY, jsonStr);
     console.log(`✅ Database saved to localStorage (${sizeInKB.toFixed(2)} KB)`);
+    return true;
   } catch (error) {
     console.error('Error saving database to localStorage:', error);
     // Check if it's a quota exceeded error
     if (error.name === 'QuotaExceededError') {
       console.error('localStorage quota exceeded. Try clearing old data.');
     }
+    return false;
   }
 };
 
@@ -182,10 +200,15 @@ export const saveMeta = async (deviceId, filterType, periodIndex, value) => {
     `);
 
     stmt.bind([String(deviceId), filterType, periodIndex, numValue]);
-    stmt.step();
+    const executeResult = stmt.step();
     stmt.free();
 
-    saveDatabase();
+    const saved = saveDatabase();
+    if (!saved) {
+      console.error('Failed to save database to localStorage');
+      return false;
+    }
+
     console.log(`✅ Meta saved to database: device ${deviceId}, ${filterType}, index ${periodIndex} = ${numValue}`);
     return true;
   } catch (error) {
@@ -256,10 +279,15 @@ export const saveActivationMeta = async (deviceId, filterType, periodIndex, valu
     `);
 
     stmt.bind([String(deviceId), filterType, periodIndex, numValue]);
-    stmt.step();
+    const executeResult = stmt.step();
     stmt.free();
 
-    saveDatabase();
+    const saved = saveDatabase();
+    if (!saved) {
+      console.error('Failed to save activation meta to localStorage');
+      return false;
+    }
+
     console.log(`✅ Activation meta saved: device ${deviceId}, ${filterType}, index ${periodIndex} = ${numValue}h`);
     return true;
   } catch (error) {

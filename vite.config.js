@@ -18,7 +18,7 @@ export default defineConfig({
   // 📦 Caminho correto para o GitHub Pages
   // ⚠️ TEM que ser exatamente o nome do repositório:
   // https://metiieus.github.io/Ecoar/
-  base: '/Ecoar/',
+  base: process.env.NODE_ENV === 'production' ? '/Ecoar/' : '/',
 
   // 🧭 Alias
   resolve: {
