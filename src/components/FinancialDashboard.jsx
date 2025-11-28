@@ -636,7 +636,7 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
             </div>
             <p className="text-2xl font-bold text-[#1F4532] mb-2">
               {periodFilter === 'daily'
-                ? apiData?.ocupacao_mensal ? apiData.ocupacao_mensal[currentMonthIndex]?.toFixed(1) || 0 : 0
+                ? apiData?.ocupacao_diaria ? apiData.ocupacao_diaria[selectedPeriodIndex]?.toFixed(1) || 0 : 0
                 : apiData?.ocupacao_mensal ? apiData.ocupacao_mensal[selectedPeriodIndex]?.toFixed(1) || 0 : 0}%
             </p>
             <p className="text-xs text-gray-500">
