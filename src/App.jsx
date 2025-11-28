@@ -8,7 +8,6 @@ import ControlCenter from './components/ControlCenter';
 import ConsumptionTab from './components/ConsumptionTab';
 import Login from './components/Login';
 import { ApiDataProvider, useApiDataContext } from './context/ApiDataContext';
-import { initializeSQL } from './lib/sqliteDatabase'; // 🔧 CORREÇÃO: Importar inicialização do banco
 
 function AppContent() {
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
@@ -24,20 +23,6 @@ function AppContent() {
   });
 
   const { handleDeviceChange } = useApiDataContext();
-
-  // 🔧 CORREÇÃO: Inicializar banco de dados SQLite ao carregar a aplicação
-  useEffect(() => {
-    console.log('🚀 Initializing SQLite database...');
-    initializeSQL()
-      .then(() => {
-        console.log('✅ Database initialized successfully on app load');
-      })
-      .catch(error => {
-        console.error('❌ Failed to initialize database on app load:', error);
-        // Mostrar alerta ao usuário se a inicialização falhar
-        alert('Erro ao inicializar o banco de dados. Algumas funcionalidades podem não funcionar corretamente.');
-      });
-  }, []);
 
   const handleLogin = (credentials) => {
     // Aqui você pode adicionar a lógica de autenticação real
