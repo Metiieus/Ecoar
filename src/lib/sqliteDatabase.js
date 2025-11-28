@@ -5,6 +5,20 @@ let db = null;
 const DB_STORAGE_KEY = 'ecoar_sqlite_db';
 let initPromise = null;
 
+// Check if localStorage is available
+const isLocalStorageAvailable = () => {
+  try {
+    const test = '__localStorage_test__';
+    localStorage.setItem(test, test);
+    localStorage.removeItem(test);
+    return true;
+  } catch (e) {
+    return false;
+  }
+};
+
+const canUseLocalStorage = isLocalStorageAvailable();
+
 /**
  * Initialize SQLite database with proper error handling
  */
