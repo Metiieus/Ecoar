@@ -289,6 +289,19 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
     return getComparisonWithPreviousPeriod(monthlyData, 'monthly', currentMonthIndex);
   }, [monthlyData, currentMonthIndex]);
 
+  // Fixed monthly totals for summary section (do not change based on periodFilter)
+  const fixedTotalConsumption = useMemo(() => {
+    return monthlyData.reduce((sum, item) => sum + item.consumo, 0);
+  }, [monthlyData]);
+
+  const fixedTotalEconomy = useMemo(() => {
+    return monthlyData.reduce((sum, item) => sum + item.consumoSemSistema, 0);
+  }, [monthlyData]);
+
+  const fixedEconomyRate = useMemo(() => {
+    return calculateEconomyRate(fixedTotalEconomy, fixedTotalConsumption);
+  }, [fixedTotalEconomy, fixedTotalConsumption]);
+
   // Get activation hours
   const activationHours = useMemo(() => {
     return getActivationHours(apiData, periodFilter, selectedPeriodIndex);
