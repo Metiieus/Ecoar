@@ -126,13 +126,31 @@ const saveDatabase = () => {
 
   try {
     const data = db.export();
+    if (!data || data.length === 0) {
+      console.warn('Database export returned empty data');
+      return false;
+    }
+
     const arr = Array.from(data);
+
+    // Verify array conversion
+    if (!Array.isArray(arr) || arr.length === 0) {
+      console.error('Failed to convert database to array');
+      return false;
+    }
+
     const jsonStr = JSON.stringify(arr);
 
     // Check localStorage size
     const sizeInKB = jsonStr.length / 1024;
     if (sizeInKB > 5000) {
       console.warn(`Database size is large (${sizeInKB.toFixed(2)} KB), consider archiving old data`);
+    }
+
+    // Verify localStorage is available
+    if (!localStorage) {
+      console.error('localStorage is not available');
+      return false;
     }
 
     localStorage.setItem(DB_STORAGE_KEY, jsonStr);
@@ -143,6 +161,13 @@ const saveDatabase = () => {
     // Check if it's a quota exceeded error
     if (error.name === 'QuotaExceededError') {
       console.error('localStorage quota exceeded. Try clearing old data.');
+      // Try to clear and retry
+      try {
+        localStorage.removeItem(DB_STORAGE_KEY);
+        console.log('Cleared old database data, please try again');
+      } catch (clearError) {
+        console.error('Failed to clear localStorage:', clearError);
+      }
     }
     return false;
   }
