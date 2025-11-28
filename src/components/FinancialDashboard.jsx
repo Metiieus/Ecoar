@@ -627,19 +627,6 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
             </p>
           </div>
 
-          {/* Redução Mensal Card */}
-          <div className={`bg-gradient-to-br rounded-lg p-5 shadow-md border text-white flex flex-col justify-center hover:shadow-lg transition-shadow h-fit ${
-            monthlyReduction.percentChange >= 0
-              ? 'border-[#1F4532]/20'
-              : 'from-red-500 to-red-600 border-red-700/20'
-          }`}
-          style={monthlyReduction.percentChange >= 0 ? { background: '#1F4532' } : undefined}>
-            <p className="text-3xl font-bold mb-1 text-center">{Math.abs(monthlyReduction.percentChange).toFixed(1)}%</p>
-            <p className="text-xs font-semibold text-center leading-tight">
-              {monthlyReduction.percentChange >= 0 ? '↓ Redução' : '↑ Aumento'} Mensal
-            </p>
-          </div>
-
           {/* Ocupação Card */}
           <div className="bg-gradient-to-br from-[#1F4532] to-[#2D5740] rounded-lg p-4 shadow-md border border-[#1F4532]/20 hover:shadow-lg transition-shadow">
             <div className="flex items-center justify-between mb-2">
