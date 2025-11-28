@@ -793,30 +793,30 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
             </div>
           </div>
 
-          {/* Redução Mensal and Redução vs Mês anterior Cards */}
-          <div className="flex flex-col gap-4">
-            {(periodFilter === 'monthly' || periodFilter === 'daily') && (
-              <div className="bg-gradient-to-br from-[#10b981] to-[#059669] rounded-lg p-5 shadow-md border border-[#10b981]/20 text-white flex flex-col justify-center hover:shadow-lg transition-shadow h-fit">
-                <p className="text-3xl font-bold mb-1 text-center">{monthlyEconomyPercentage.toFixed(1)}%</p>
-                <p className="text-xs font-semibold text-center leading-tight">
-                  ↓ Redução Mensal
-                </p>
-              </div>
-            )}
-            {(periodFilter === 'monthly' || periodFilter === 'daily') && (
-              <div className={`bg-gradient-to-br rounded-lg p-5 shadow-md border text-white flex flex-col justify-center hover:shadow-lg transition-shadow h-fit ${
-                monthlyReduction.percentChange >= 0
-                  ? 'border-[#10b981]/20'
-                  : 'from-red-500 to-red-600 border-red-700/20'
-              }`}
-              style={monthlyReduction.percentChange >= 0 ? { background: '#10b981' } : undefined}>
-                <p className="text-3xl font-bold mb-1 text-center">{Math.abs(monthlyReduction.percentChange).toFixed(1)}%</p>
-                <p className="text-xs font-semibold text-center leading-tight">
-                  {monthlyReduction.percentChange >= 0 ? '↓ Redução' : '↑ Aumento'} vs Mês anterior
-                </p>
-              </div>
-            )}
-          </div>
+          {/* Redução Mensal Card */}
+          {(periodFilter === 'monthly' || periodFilter === 'daily') && (
+            <div className="bg-gradient-to-br from-[#10b981] to-[#059669] rounded-lg p-5 shadow-md border border-[#10b981]/20 text-white flex flex-col justify-center hover:shadow-lg transition-shadow h-fit">
+              <p className="text-3xl font-bold mb-1 text-center">{monthlyEconomyPercentage.toFixed(1)}%</p>
+              <p className="text-xs font-semibold text-center leading-tight">
+                ↓ Redução Mensal
+              </p>
+            </div>
+          )}
+
+          {/* Redução vs Mês anterior Card */}
+          {(periodFilter === 'monthly' || periodFilter === 'daily') && (
+            <div className={`bg-gradient-to-br rounded-lg p-5 shadow-md border text-white flex flex-col justify-center hover:shadow-lg transition-shadow h-fit ${
+              monthlyReduction.percentChange >= 0
+                ? 'border-[#10b981]/20'
+                : 'from-red-500 to-red-600 border-red-700/20'
+            }`}
+            style={monthlyReduction.percentChange >= 0 ? { background: '#10b981' } : undefined}>
+              <p className="text-3xl font-bold mb-1 text-center">{Math.abs(monthlyReduction.percentChange).toFixed(1)}%</p>
+              <p className="text-xs font-semibold text-center leading-tight">
+                {monthlyReduction.percentChange >= 0 ? '↓ Redução' : '↑ Aumento'} vs Mês anterior
+              </p>
+            </div>
+          )}
         </div>
       </div>
 
