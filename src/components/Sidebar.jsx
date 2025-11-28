@@ -28,15 +28,23 @@ const Sidebar = ({ activeTab = 'dashboard', setActiveTab, onLogout }) => {
           <Tooltip key={item.id}>
             <TooltipTrigger asChild>
               <button
-                onClick={() => setActiveTab(item.id)}
-                className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${
-                  activeTab === item.id
+                onClick={() => !item.disabled && setActiveTab(item.id)}
+                disabled={item.disabled}
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 relative ${
+                  item.disabled
+                    ? 'opacity-50 cursor-not-allowed text-[#D4CFC0]'
+                    : activeTab === item.id
                     ? 'bg-[#A3B18A]/25 shadow-lg backdrop-blur-sm'
                     : 'text-[#D4CFC0] hover:bg-[#A3B18A]/15'
                 }`}
               >
                 <item.icon className="w-5 h-5 flex-shrink-0" />
                 <span className="font-medium text-sm">{item.label}</span>
+                {item.disabled && (
+                  <span className="ml-auto text-xs px-2 py-1 bg-[#A3B18A]/30 rounded font-semibold">
+                    Em breve
+                  </span>
+                )}
               </button>
             </TooltipTrigger>
             <TooltipContent side="right">
