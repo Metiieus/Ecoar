@@ -692,7 +692,7 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
         </div>
 
         {/* Período Selecionado Card */}
-        <div className="bg-gradient-to-br from-blue-50 to-white rounded-lg p-4 shadow-md border border-blue-200 hover:shadow-lg transition-shadow h-fit col-span-1 sm:col-span-1">
+        <div className="bg-gradient-to-br from-blue-50 to-white rounded-lg p-4 shadow-md border border-blue-200 hover:shadow-lg transition-shadow h-fit col-span-1 lg:col-span-2">
           <div className="flex items-center justify-between mb-2">
             <p className="text-xs font-bold text-blue-700 uppercase tracking-wide">
               {periodFilter === 'daily' ? `Dia ${selectedPeriodIndex + 1}` : monthNames[selectedPeriodIndex]}
