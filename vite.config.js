@@ -2,7 +2,6 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import path from 'path'
-import { viteStaticCopy } from 'vite-plugin-static-copy'
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -15,17 +14,8 @@ export default defineConfig({
 
   // 🧩 Plugins
   plugins: [
-    react(), 
-    tailwindcss(),
-    // 🔧 CORREÇÃO: Copiar arquivos WASM do sql.js para a raiz do dist
-    viteStaticCopy({
-      targets: [
-        {
-          src: 'node_modules/sql.js/dist/sql-wasm.wasm',
-          dest: ''
-        }
-      ]
-    })
+    react(),
+    tailwindcss()
   ],
 
   // 📦 Caminho correto para o GitHub Pages
@@ -56,10 +46,5 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     emptyOutDir: true,
-  },
-
-  // 🔧 CORREÇÃO: Otimizações para WASM - excluir sql.js do pre-bundling
-  optimizeDeps: {
-    exclude: ['sql.js']
   }
 })
