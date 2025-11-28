@@ -11,7 +11,8 @@ const defaultApiData = {
   consumo_sem_sistema_diario: [39.01, 38.6, 39.63, 38.18, 39.22, 39.22, 39.63, 42.1, 40.04, 39.01, 39.42, 39.63, 38.8, 39.42, 40.04, 39.22, 39.42, 35.71, 28.07, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
   potencias: [],
   minutos_desligado_diario: [189, 187, 192, 185, 190, 190, 192, 204, 194, 189, 191, 192, 188, 191, 194, 190, 191, 173, 136, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  minutos_desligado_mensal: [0, 0, 0, 0, 0, 0, 0, 1387, 5103, 4048, 3558, 0]
+  minutos_desligado_mensal: [0, 0, 0, 0, 0, 0, 0, 1387, 5103, 4048, 3558, 0],
+  ocupacao_mensal: [0.0, 0.0, 65.5, 72.3, 78.9, 82.1, 75.4, 71.6, 68.2, 74.5, 58.3, 0.0]
 };
 
 export const useApiData = (deviceId = 33, includeHistory = true) => {
@@ -86,6 +87,7 @@ export const useApiData = (deviceId = 33, includeHistory = true) => {
         // Otherwise, derive them from consumo_mensal / consumo_diario_mes_corrente without rounding
         const hasApiMonthlyWithout = Array.isArray(apiData.consumo_sem_sistema_mensal) && apiData.consumo_sem_sistema_mensal.some(v => v && Number(v) > 0);
         const hasApiDailyWithout = Array.isArray(apiData.consumo_sem_sistema_diario) && apiData.consumo_sem_sistema_diario.some(v => v && Number(v) > 0);
+        const hasApiOcupacao = Array.isArray(apiData.ocupacao_mensal) && apiData.ocupacao_mensal.length > 0;
 
         const enrichedData = {
           ...apiData,
@@ -94,7 +96,10 @@ export const useApiData = (deviceId = 33, includeHistory = true) => {
             : (apiData.consumo_mensal?.length > 0 ? apiData.consumo_mensal.map(consumo => Math.max(0, (Number(consumo) || 0) / 0.8)) : []),
           consumo_sem_sistema_diario: hasApiDailyWithout
             ? apiData.consumo_sem_sistema_diario.map(v => Math.max(0, Number(v)))
-            : (apiData.consumo_diario_mes_corrente?.length > 0 ? apiData.consumo_diario_mes_corrente.map(consumo => Math.max(0, (Number(consumo) || 0) / 0.8)) : [])
+            : (apiData.consumo_diario_mes_corrente?.length > 0 ? apiData.consumo_diario_mes_corrente.map(consumo => Math.max(0, (Number(consumo) || 0) / 0.8)) : []),
+          ocupacao_mensal: hasApiOcupacao
+            ? apiData.ocupacao_mensal.map(v => Math.max(0, Number(v)))
+            : defaultApiData.ocupacao_mensal
         };
 
         setData(enrichedData);
