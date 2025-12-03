@@ -60,11 +60,6 @@ export const useApiData = (deviceId = 33, includeHistory = true) => {
 
         const apiData = await response.json();
 
-        console.log('📊 API Response Data - Meta field:', {
-          meta: apiData.meta,
-          allKeys: Object.keys(apiData)
-        });
-
         // Validate API data structure
         const requiredArrays = [
           'consumo_mensal',
