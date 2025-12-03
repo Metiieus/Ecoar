@@ -136,6 +136,7 @@ export const ApiDataProvider = ({ children }) => {
   const aggregateDevicesData = useCallback((devicesDataMap) => {
     if (Object.keys(devicesDataMap).length === 0) {
       return {
+        meta: null,
         consumo_mensal: [],
         consumo_diario_mes_corrente: [],
         consumo_sem_sistema_mensal: [],
