@@ -622,7 +622,7 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
               </div>
               <TrendingDown className="w-4 h-4 text-[#1F4532]" />
             </div>
-            {isEditingMeta ? (
+            {isEditingMeta && !isApiMetaAvailable ? (
               <div className="space-y-2">
                 <input
                   autoFocus
