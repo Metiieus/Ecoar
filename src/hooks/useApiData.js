@@ -130,7 +130,9 @@ export const useApiData = (deviceId = 33, includeHistory = true) => {
           monthlyPoints: enrichedData.consumo_mensal?.length || 0,
           dailyPoints: enrichedData.consumo_diario_mes_corrente?.length || 0,
           hasApiMonthlyWithout,
-          hasApiDailyWithout
+          hasApiDailyWithout,
+          metaTempoMensal: enrichedData.meta_tempo_atuacao_mensal,
+          metaTempoDiaria: enrichedData.meta_tempo_atuacao_diaria?.slice(0, 5)
         });
       } catch (err) {
         console.warn('Erro ao buscar dados da API:', err.message);
