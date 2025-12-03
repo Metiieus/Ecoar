@@ -85,12 +85,12 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
       if (periodFilter === 'daily') {
         const dailyData = apiData?.consumo_diario_mes_corrente || [];
         for (let dayIndex = 0; dayIndex < dailyData.length; dayIndex++) {
-          const meta = await loadActivationTimeMeta(selectedDeviceId, 'daily', dayIndex);
+          const meta = await loadActivationTimeMeta(selectedDeviceId, 'daily', dayIndex, apiData);
           metas[`daily_${dayIndex}`] = meta;
         }
       } else {
         for (let monthIndex = 0; monthIndex <= currentMonthIndex; monthIndex++) {
-          const meta = await loadActivationTimeMeta(selectedDeviceId, 'monthly', monthIndex);
+          const meta = await loadActivationTimeMeta(selectedDeviceId, 'monthly', monthIndex, apiData);
           metas[`monthly_${monthIndex}`] = meta;
         }
       }
@@ -104,13 +104,13 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
     const loadDeviceMetas = async () => {
       const metas = {};
       for (const device of deviceRankings.slice(0, 3)) {
-        const meta = await loadActivationTimeMeta(device.id, periodFilter, selectedPeriodIndex);
+        const meta = await loadActivationTimeMeta(device.id, periodFilter, selectedPeriodIndex, apiData);
         metas[device.id] = meta;
       }
       setDeviceMetas(metas);
     };
     loadDeviceMetas();
-  }, [periodFilter, selectedPeriodIndex]);
+  }, [periodFilter, selectedPeriodIndex, apiData]);
 
   const handleCostInputChange = (e) => {
     setCostInputValue(e.target.value);
@@ -446,7 +446,7 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
         },
         {
           name: 'Meta',
-          data: chartData.map(() => ensureNonNegative(currentMeta)),
+          data: chartData.map(() => ensureNonNegative(displayMeta)),
           type: 'line',
           smooth: false,
           lineStyle: { width: 2, color: '#f59e0b', type: 'dashed' },
@@ -515,7 +515,7 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
         },
         {
           name: 'Meta',
-          data: chartData.map(() => ensureNonNegative(currentMeta)),
+          data: chartData.map(() => ensureNonNegative(displayMeta)),
           type: 'line',
           smooth: false,
           lineStyle: { width: 2, color: '#f59e0b', type: 'dashed' },
@@ -818,7 +818,7 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
               </div>
             </div>
             <div className="bg-blue-50/50 rounded p-2 space-y-1">
-              <p className="text-xs text-[#6B7560]">Meta: <span className="font-semibold text-gray-900">R${ensureNonNegative(currentMeta).toLocaleString('pt-BR')}</span></p>
+              <p className="text-xs text-[#6B7560]">Meta: <span className="font-semibold text-gray-900">R${ensureNonNegative(displayMeta).toLocaleString('pt-BR')}</span></p>
               <p className="text-xs text-[#6B7560]">
                 Economia: <span className="font-semibold text-[#1F4532]">
                   R${ensureNonNegative((currentPeriodData?.consumo || 0) - (currentPeriodData?.consumoSemSistema || 0)).toLocaleString('pt-BR')}

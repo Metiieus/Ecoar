@@ -287,15 +287,16 @@ export const getLastThreeMonths = (monthlyData) => {
 };
 
 /**
- * Load activation time meta from SQLite database for a specific device
+ * Load activation time meta from storage or API data for a specific device
  * @param {Number|String} deviceId - Device ID
  * @param {String} filterType - 'daily' or 'monthly'
  * @param {Number} periodIndex - Period index (month or day)
- * @returns {Promise<Number>} Saved activation time meta in hours or default value
+ * @param {Object} apiData - Optional API data containing meta_tempo_atuacao fields
+ * @returns {Promise<Number>} Saved activation time meta in hours or default value from API
  */
-export const loadActivationTimeMeta = async (deviceId, filterType, periodIndex) => {
+export const loadActivationTimeMeta = async (deviceId, filterType, periodIndex, apiData = null) => {
   try {
-    return await loadActivationMeta(deviceId, filterType, periodIndex);
+    return await loadActivationMeta(deviceId, filterType, periodIndex, apiData);
   } catch (error) {
     console.error('Erro ao carregar meta de ativação:', error);
     return filterType === 'daily' ? 24 : 720;

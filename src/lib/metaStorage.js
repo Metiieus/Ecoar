@@ -75,25 +75,49 @@ export const saveMeta = async (deviceId, filterType, periodIndex, value) => {
 };
 
 /**
- * Load activation meta from localStorage
+ * Load activation meta from localStorage (or API data)
  * @param {Number|String} deviceId - Device ID
  * @param {String} filterType - 'daily' or 'monthly'
  * @param {Number} periodIndex - Period index
- * @returns {Number} Saved activation time meta in hours or default value
+ * @param {Object} apiData - Optional API data to check for meta_tempo_atuacao
+ * @returns {Number} Saved activation time meta in hours or default value from API
  */
-export const loadActivationMeta = async (deviceId, filterType, periodIndex) => {
+export const loadActivationMeta = async (deviceId, filterType, periodIndex, apiData = null) => {
   try {
+    // First, check localStorage for user-saved values
     const key = generateActivationMetaKey(deviceId, filterType, periodIndex);
     const value = localStorage.getItem(key);
-    
+
     if (value !== null) {
       const parsed = parseFloat(value);
-      console.log(`⏱️ Activation meta loaded: device ${deviceId}, ${filterType}, index ${periodIndex} = ${parsed}h`);
+      console.log(`⏱️ Activation meta loaded from storage: device ${deviceId}, ${filterType}, index ${periodIndex} = ${parsed}h`);
       return parsed;
     }
 
+    // If API data is provided, try to get value from API
+    if (apiData) {
+      if (filterType === 'daily' && Array.isArray(apiData.meta_tempo_atuacao_diaria)) {
+        const apiValue = apiData.meta_tempo_atuacao_diaria[periodIndex];
+        if (apiValue !== undefined && apiValue !== null && !isNaN(apiValue)) {
+          const parsed = parseFloat(apiValue);
+          console.log(`⏱️ Activation meta loaded from API (daily): device ${deviceId}, index ${periodIndex} = ${parsed}h`);
+          return parsed;
+        }
+      }
+
+      if (filterType === 'monthly' && Array.isArray(apiData.meta_tempo_atuacao_mensal)) {
+        const apiValue = apiData.meta_tempo_atuacao_mensal[periodIndex];
+        if (apiValue !== undefined && apiValue !== null && !isNaN(apiValue)) {
+          const parsed = parseFloat(apiValue);
+          console.log(`⏱️ Activation meta loaded from API (monthly): device ${deviceId}, index ${periodIndex} = ${parsed}h`);
+          return parsed;
+        }
+      }
+    }
+
+    // Fallback to default
     const defaultValue = filterType === 'daily' ? 24 : 720;
-    console.log(`⏱️ Activation meta not found, returning default: ${defaultValue}h`);
+    console.log(`⏱️ Activation meta not found in storage or API, returning default: ${defaultValue}h`);
     return defaultValue;
   } catch (error) {
     console.error('Error loading activation meta:', error);

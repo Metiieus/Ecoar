@@ -7,6 +7,8 @@ const API_BASE_URL = import.meta.env.PROD
 const defaultApiData = {
   meta_consumo_mensal: [2500, 2500, 2500, 2500, 2500, 2500, 2500, 2500, 2500, 2500, 2500, 2500],
   meta_consumo_diaria: [70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70],
+  meta_tempo_atuacao_mensal: [720, 720, 720, 720, 720, 720, 720, 720, 720, 720, 720, 720],
+  meta_tempo_atuacao_diaria: [24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24],
   consumo_mensal: [0.0, 0.0, 563.28, 1805.39, 2453.32, 2687.39, 2208.17, 2169.09, 1740.71, 1999.26, 1085.54, 0.0],
   consumo_diario_mes_corrente: [52.85, 49.92, 49.06, 53.5, 64.72, 60.86, 55.28, 58.17, 23.12, 0.0, 0.0, 41.38, 60.51, 54.7, 50.44, 50.61, 53.77, 53.49, 48.38, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
   consumo_sem_sistema_mensal: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 286.27, 1053.23, 835.49, 734.35, 0.0],
@@ -92,6 +94,8 @@ export const useApiData = (deviceId = 33, includeHistory = true) => {
         const hasApiDailyWithout = Array.isArray(apiData.consumo_sem_sistema_diario) && apiData.consumo_sem_sistema_diario.some(v => v && Number(v) > 0);
         const hasApiOcupacaoMensal = Array.isArray(apiData.ocupacao_mensal) && apiData.ocupacao_mensal.length > 0;
         const hasApiOcupacaoDiaria = Array.isArray(apiData.ocupacao_diaria) && apiData.ocupacao_diaria.length > 0;
+        const hasApiMetaTempoMensal = Array.isArray(apiData.meta_tempo_atuacao_mensal) && apiData.meta_tempo_atuacao_mensal.length > 0;
+        const hasApiMetaTempoDiaria = Array.isArray(apiData.meta_tempo_atuacao_diaria) && apiData.meta_tempo_atuacao_diaria.length > 0;
 
         const enrichedData = {
           ...apiData,
@@ -101,6 +105,12 @@ export const useApiData = (deviceId = 33, includeHistory = true) => {
           meta_consumo_diaria: Array.isArray(apiData.meta_consumo_diaria)
             ? apiData.meta_consumo_diaria.map(v => Number(v))
             : [],
+          meta_tempo_atuacao_mensal: hasApiMetaTempoMensal
+            ? apiData.meta_tempo_atuacao_mensal.map(v => Math.max(0, Number(v)))
+            : defaultApiData.meta_tempo_atuacao_mensal,
+          meta_tempo_atuacao_diaria: hasApiMetaTempoDiaria
+            ? apiData.meta_tempo_atuacao_diaria.map(v => Math.max(0, Number(v)))
+            : defaultApiData.meta_tempo_atuacao_diaria,
           consumo_sem_sistema_mensal: hasApiMonthlyWithout
             ? apiData.consumo_sem_sistema_mensal.map(v => Math.max(0, Number(v)))
             : (apiData.consumo_mensal?.length > 0 ? apiData.consumo_mensal.map(consumo => Math.max(0, (Number(consumo) || 0) / 0.8)) : []),
@@ -120,7 +130,9 @@ export const useApiData = (deviceId = 33, includeHistory = true) => {
           monthlyPoints: enrichedData.consumo_mensal?.length || 0,
           dailyPoints: enrichedData.consumo_diario_mes_corrente?.length || 0,
           hasApiMonthlyWithout,
-          hasApiDailyWithout
+          hasApiDailyWithout,
+          metaTempoMensal: enrichedData.meta_tempo_atuacao_mensal,
+          metaTempoDiaria: enrichedData.meta_tempo_atuacao_diaria?.slice(0, 5)
         });
       } catch (err) {
         console.warn('Erro ao buscar dados da API:', err.message);
