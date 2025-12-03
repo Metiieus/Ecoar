@@ -94,6 +94,8 @@ export const useApiData = (deviceId = 33, includeHistory = true) => {
         const hasApiDailyWithout = Array.isArray(apiData.consumo_sem_sistema_diario) && apiData.consumo_sem_sistema_diario.some(v => v && Number(v) > 0);
         const hasApiOcupacaoMensal = Array.isArray(apiData.ocupacao_mensal) && apiData.ocupacao_mensal.length > 0;
         const hasApiOcupacaoDiaria = Array.isArray(apiData.ocupacao_diaria) && apiData.ocupacao_diaria.length > 0;
+        const hasApiMetaTempoMensal = Array.isArray(apiData.meta_tempo_atuacao_mensal) && apiData.meta_tempo_atuacao_mensal.length > 0;
+        const hasApiMetaTempoDiaria = Array.isArray(apiData.meta_tempo_atuacao_diaria) && apiData.meta_tempo_atuacao_diaria.length > 0;
 
         const enrichedData = {
           ...apiData,
