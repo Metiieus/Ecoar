@@ -446,7 +446,7 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
         },
         {
           name: 'Meta',
-          data: chartData.map(() => ensureNonNegative(currentMeta)),
+          data: chartData.map(() => ensureNonNegative(displayMeta)),
           type: 'line',
           smooth: false,
           lineStyle: { width: 2, color: '#f59e0b', type: 'dashed' },
@@ -515,7 +515,7 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
         },
         {
           name: 'Meta',
-          data: chartData.map(() => ensureNonNegative(currentMeta)),
+          data: chartData.map(() => ensureNonNegative(displayMeta)),
           type: 'line',
           smooth: false,
           lineStyle: { width: 2, color: '#f59e0b', type: 'dashed' },
