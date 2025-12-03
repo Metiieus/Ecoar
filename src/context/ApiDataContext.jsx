@@ -149,7 +149,7 @@ export const ApiDataProvider = ({ children }) => {
     }
 
     const aggregated = {
-      meta: null,
+      meta_consumo_mensal: Array(12).fill(0),
       consumo_mensal: Array(12).fill(0),
       consumo_diario_mes_corrente: Array(31).fill(0),
       consumo_sem_sistema_mensal: Array(12).fill(0),
