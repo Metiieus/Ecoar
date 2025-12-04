@@ -9,6 +9,7 @@ import ConsumptionTab from './components/ConsumptionTab';
 import Device39Validator from './components/Device39Validator';
 import Login from './components/Login';
 import { ApiDataProvider, useApiDataContext } from './context/ApiDataContext';
+import { ClientProvider } from './context/ClientContext';
 
 function AppContent() {
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
@@ -16,7 +17,6 @@ function AppContent() {
     return localStorage.getItem('isAuthenticated') === 'true';
   });
   const [activeSidebarTab, setActiveSidebarTab] = useState('dashboard');
-  const [selectedEstablishment, setSelectedEstablishment] = useState(1);
   const [selectedApiDeviceId, setSelectedApiDeviceId] = useState(33);
   const [selectedDeviceId, setSelectedDeviceId] = useState(() => {
     const params = new URLSearchParams(window.location.search);
@@ -65,8 +65,6 @@ function AppContent() {
       {/* Main Content */}
       <div className="flex-1 w-full">
         <Header
-          selectedEstablishment={selectedEstablishment}
-          onEstablishmentChange={setSelectedEstablishment}
           selectedDeviceId={selectedApiDeviceId}
           onDeviceChange={setSelectedApiDeviceId}
           onLogout={handleLogout}
@@ -93,7 +91,6 @@ function AppContent() {
                 />
               ) : (
                 <FinancialDashboard
-                  selectedEstablishment={selectedEstablishment}
                   onSelectDevice={setSelectedDeviceId}
                 />
               )}
@@ -119,9 +116,11 @@ function AppContent() {
 
 function App() {
   return (
-    <ApiDataProvider>
-      <AppContent />
-    </ApiDataProvider>
+    <ClientProvider>
+      <ApiDataProvider>
+        <AppContent />
+      </ApiDataProvider>
+    </ClientProvider>
   );
 }
 

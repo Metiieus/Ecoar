@@ -24,7 +24,7 @@ import {
 
 const monthNames = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
 
-const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
+const FinancialDashboard = ({ onSelectDevice }) => {
   const { apiData, loading, error, selectedDeviceId, periodFilter, setPeriodFilter, selectedPeriodIndex, setSelectedPeriodIndex } = useApiDataContext();
 
   const [isEditingMeta, setIsEditingMeta] = useState(false);
@@ -618,24 +618,24 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
         </div>
       )}
       {/* Top Metrics Row */}
-      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-3 md:gap-4 items-start">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 md:gap-4 items-start">
         {/* Left Sidebar with 4 Cards */}
-        <div className="space-y-3 md:col-span-1 lg:col-span-1 lg:space-y-3">
-          <div className={`rounded-lg p-4 shadow-md border transition-all h-fit ${
+        <div className="space-y-3 col-span-1 sm:col-span-2 lg:col-span-1 lg:space-y-3">
+          <div className={`rounded-lg p-3 sm:p-4 shadow-md border transition-all h-fit ${
             isEditingMeta
               ? 'bg-[#F0EAD2] border-[#D4CFC0] border-2'
               : 'bg-white border-[#E8DCC8] hover:shadow-lg'
           }`}>
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex flex-col gap-0.5">
+            <div className="flex items-center justify-between mb-3 gap-2">
+              <div className="flex flex-col gap-0.5 min-w-0">
                 <p className="text-xs font-bold text-[#6B7560] uppercase tracking-wide">
                   {periodFilter === 'daily' ? 'Meta Diária' : 'Meta Mensal'}
                 </p>
-                <p className="text-xs text-[#A3B18A]">
+                <p className="text-xs text-[#A3B18A] truncate">
                   {periodFilter === 'daily' ? `Dia ${selectedPeriodIndex + 1}` : monthNames[selectedPeriodIndex]}
                 </p>
               </div>
-              <TrendingDown className="w-4 h-4 text-[#1F4532]" />
+              <TrendingDown className="w-4 h-4 text-[#1F4532] flex-shrink-0" />
             </div>
             {isEditingMeta && !isApiMetaAvailable ? (
               <div className="space-y-2">
@@ -646,30 +646,31 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
                   onChange={handleCostInputChange}
                   onKeyPress={handleCostKeyPress}
                   placeholder="0"
-                  className="w-full px-3 py-2 border-2 border-[#A3B18A] rounded text-sm focus:outline-none focus:ring-2 focus:ring-[#1F4532]"
+                  className="w-full px-2 py-1.5 sm:px-3 sm:py-2 border-2 border-[#A3B18A] rounded text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#1F4532]"
                 />
                 <div className="flex gap-2">
                   <button
                     onClick={handleSaveCostMeta}
-                    className="flex-1 px-3 py-2 bg-[#1F4532] hover:bg-[#2D5740] text-white rounded text-xs font-medium transition-colors flex items-center justify-center gap-1"
+                    className="flex-1 px-2 py-1.5 sm:px-3 sm:py-2 bg-[#1F4532] hover:bg-[#2D5740] text-white rounded text-xs font-medium transition-colors flex items-center justify-center gap-1"
                   >
-                    <Check className="w-4 h-4" />
-                    Salvar
+                    <Check className="w-3 sm:w-4 h-3 sm:h-4" />
+                    <span className="hidden sm:inline">Salvar</span>
                   </button>
                   <button
                     onClick={() => {
                       setIsEditingMeta(false);
                       setCostInputValue(currentMeta.toString());
                     }}
-                    className="flex-1 px-3 py-2 bg-gray-200 hover:bg-gray-300 text-[#1F4532] rounded text-xs font-medium transition-colors"
+                    className="flex-1 px-2 py-1.5 sm:px-3 sm:py-2 bg-gray-200 hover:bg-gray-300 text-[#1F4532] rounded text-xs font-medium transition-colors"
                   >
-                    Cancelar
+                    <span className="hidden sm:inline">Cancelar</span>
+                    <span className="sm:hidden">×</span>
                   </button>
                 </div>
               </div>
             ) : (
               <div className="space-y-2">
-                <p className="text-3xl font-bold text-gray-900">R${ensureNonNegative(displayMeta).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
+                <p className="text-2xl sm:text-3xl font-bold text-gray-900">R${ensureNonNegative(displayMeta).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
                 <button
                   onClick={() => {
                     if (!isApiMetaAvailable) {
@@ -679,7 +680,7 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
                     }
                   }}
                   disabled={isApiMetaAvailable}
-                  className={`w-full px-3 py-2 rounded text-xs font-medium transition-colors flex items-center justify-center gap-2 ${
+                  className={`w-full px-2 py-1.5 sm:px-3 sm:py-2 rounded text-xs font-medium transition-colors flex items-center justify-center gap-2 ${
                     isApiMetaAvailable
                       ? 'bg-gray-100 text-gray-500 cursor-not-allowed'
                       : 'bg-[#E8DCC8] hover:bg-[#E8DCC8] text-[#1F4532]'
@@ -691,8 +692,9 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
                     </>
                   ) : (
                     <>
-                      <Edit2 className="w-4 h-4" />
-                      Editar Meta
+                      <Edit2 className="w-3 sm:w-4 h-3 sm:h-4" />
+                      <span className="hidden sm:inline">Editar Meta</span>
+                      <span className="sm:hidden">Editar</span>
                     </>
                   )}
                 </button>
@@ -701,27 +703,27 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
           </div>
 
           {/* Redução Card */}
-          <div className={`bg-gradient-to-br rounded-lg p-5 shadow-md border text-white flex flex-col justify-center hover:shadow-lg transition-shadow h-fit ${
+          <div className={`bg-gradient-to-br rounded-lg p-3 sm:p-5 shadow-md border text-white flex flex-col justify-center hover:shadow-lg transition-shadow h-fit ${
             previousPeriodComparison.percentChange >= 0
               ? 'border-[#10b981]/20'
               : 'from-red-500 to-red-600 border-red-700/20'
           }`}
           style={previousPeriodComparison.percentChange >= 0 ? { background: '#10b981' } : undefined}>
-            <p className="text-3xl font-bold mb-1 text-center">{Math.abs(previousPeriodComparison.percentChange).toFixed(1)}%</p>
+            <p className="text-2xl sm:text-3xl font-bold mb-1 text-center">{Math.abs(previousPeriodComparison.percentChange).toFixed(1)}%</p>
             <p className="text-xs font-semibold text-center leading-tight">
               {previousPeriodComparison.percentChange >= 0 ? '↓ Redução' : '↑ Aumento'} vs {periodFilter === 'daily' ? 'Dia anterior' : 'Mês anterior'}
             </p>
           </div>
 
           {/* Ocupação Card */}
-          <div className="bg-gradient-to-br from-[#1F4532] to-[#2D5740] rounded-lg p-4 shadow-md border border-[#1F4532]/20 hover:shadow-lg transition-shadow">
-            <div className="flex items-center justify-between mb-2">
-              <p className="text-xs font-bold text-[#F0EAD2] uppercase tracking-wide">
+          <div className="bg-gradient-to-br from-[#1F4532] to-[#2D5740] rounded-lg p-3 sm:p-4 shadow-md border border-[#1F4532]/20 hover:shadow-lg transition-shadow">
+            <div className="flex items-center justify-between mb-2 gap-2">
+              <p className="text-xs font-bold text-[#F0EAD2] uppercase tracking-wide truncate">
                 {periodFilter === 'daily' ? 'Ocupação Diária' : 'Ocupação Mensal'}
               </p>
-              <Zap className="w-4 h-4 text-[#A3B18A]" />
+              <Zap className="w-4 h-4 text-[#A3B18A] flex-shrink-0" />
             </div>
-            <p className="text-2xl font-bold text-[#F0EAD2] mb-2">
+            <p className="text-xl sm:text-2xl font-bold text-[#F0EAD2] mb-2">
               {periodFilter === 'daily'
                 ? apiData?.ocupacao_diaria ? apiData.ocupacao_diaria[selectedPeriodIndex]?.toFixed(1) || 0 : 0
                 : apiData?.ocupacao_mensal ? apiData.ocupacao_mensal[selectedPeriodIndex]?.toFixed(1) || 0 : 0}%
@@ -733,15 +735,15 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
         </div>
 
         {/* Economia Total - Gauge Chart */}
-        <div className="bg-white rounded-lg p-6 shadow-md border border-[#E8DCC8] hover:shadow-lg transition-shadow col-span-1 md:col-span-2 lg:col-span-2 flex flex-col h-auto lg:h-96">
-          <div className="mb-4">
-            <p className="text-sm font-bold text-gray-900 uppercase tracking-wide">
+        <div className="bg-white rounded-lg p-3 sm:p-6 shadow-md border border-[#E8DCC8] hover:shadow-lg transition-shadow col-span-1 sm:col-span-2 lg:col-span-2 flex flex-col h-auto lg:h-96">
+          <div className="mb-3 sm:mb-4">
+            <p className="text-xs sm:text-sm font-bold text-gray-900 uppercase tracking-wide">
               Economia Total
             </p>
             <p className="text-xs text-gray-500 mt-1">Percentual de Economia Alcançada</p>
           </div>
-          <div className="flex-1 flex flex-col sm:flex-row items-center justify-center gap-8 overflow-hidden">
-            <div className="flex-shrink-0 w-48 h-48 sm:w-72 sm:h-72 flex items-center justify-center">
+          <div className="flex-1 flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8 overflow-hidden">
+            <div className="flex-shrink-0 w-32 h-32 sm:w-48 sm:h-48 lg:w-72 lg:h-72 flex items-center justify-center">
               <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <GaugeChart
                   id="economia-gauge"
@@ -757,29 +759,29 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
                 />
               </div>
             </div>
-            <div className="space-y-6 flex-shrink-0">
-              <div>
-                <p className="text-xs text-[#6B7560] font-semibold mb-2">Consumo Total</p>
-                <p className="text-3xl font-bold text-gray-900">R$ {(ensureNonNegative(fixedTotalConsumption) / 1000).toFixed(1)}k</p>
+            <div className="space-y-3 sm:space-y-6 flex-shrink-0 w-full sm:w-auto px-4 sm:px-0">
+              <div className="text-center sm:text-left">
+                <p className="text-xs text-[#6B7560] font-semibold mb-1 sm:mb-2">Consumo Total</p>
+                <p className="text-lg sm:text-3xl font-bold text-gray-900">R$ {(ensureNonNegative(fixedTotalConsumption) / 1000).toFixed(1)}k</p>
               </div>
-              <div>
-                <p className="text-xs text-[#6B7560] font-semibold mb-2">Economia Alcançada</p>
-                <p className="text-3xl font-bold text-[#1F4532]">R$ {(ensureNonNegative(fixedTotalEconomy) / 1000).toFixed(1)}k</p>
+              <div className="text-center sm:text-left">
+                <p className="text-xs text-[#6B7560] font-semibold mb-1 sm:mb-2">Economia Alcançada</p>
+                <p className="text-lg sm:text-3xl font-bold text-[#1F4532]">R$ {(ensureNonNegative(fixedTotalEconomy) / 1000).toFixed(1)}k</p>
               </div>
-              <div>
-                <p className="text-xs text-[#6B7560] font-semibold mb-2">Taxa de Economia</p>
-                <p className="text-2xl font-bold text-[#A3B18A]">{fixedEconomyRate.toFixed(1)}%</p>
+              <div className="text-center sm:text-left">
+                <p className="text-xs text-[#6B7560] font-semibold mb-1 sm:mb-2">Taxa de Economia</p>
+                <p className="text-base sm:text-2xl font-bold text-[#A3B18A]">{fixedEconomyRate.toFixed(1)}%</p>
               </div>
             </div>
           </div>
         </div>
 
         {/* Right Column - Período Selecionado and Redução Mensal */}
-        <div className="hidden lg:flex flex-col gap-4 col-span-1 lg:col-span-2">
+        <div className="hidden lg:grid grid-cols-1 gap-4 col-span-1 lg:col-span-2">
           {/* Período Selecionado Card */}
-          <div className="bg-gradient-to-br from-blue-50 to-white rounded-lg p-4 shadow-md border border-blue-200 hover:shadow-lg transition-shadow h-fit">
-            <div className="flex items-center justify-between mb-2">
-              <p className="text-xs font-bold text-blue-700 uppercase tracking-wide">
+          <div className="bg-gradient-to-br from-blue-50 to-white rounded-lg p-3 sm:p-4 shadow-md border border-blue-200 hover:shadow-lg transition-shadow h-fit">
+            <div className="flex items-center justify-between mb-2 gap-2">
+              <p className="text-xs font-bold text-blue-700 uppercase tracking-wide truncate">
                 {periodFilter === 'daily' ? `Dia ${selectedPeriodIndex + 1}` : monthNames[selectedPeriodIndex]}
               </p>
               {periodFilter === 'daily' ? (
@@ -789,13 +791,13 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
                   max={filteredConsumptionData.length - 1}
                   value={selectedPeriodIndex}
                   onChange={(e) => handlePeriodIndexChange(parseInt(e.target.value))}
-                  className="w-20"
+                  className="w-16 sm:w-20"
                 />
               ) : (
                 <select
                   value={selectedPeriodIndex}
                   onChange={(e) => handlePeriodIndexChange(parseInt(e.target.value))}
-                  className="text-xs px-2 py-1 border border-blue-300 rounded bg-white text-[#1F4532] hover:border-blue-500 transition-colors appearance-none cursor-pointer"
+                  className="text-xs px-2 py-1 border border-blue-300 rounded bg-white text-[#1F4532] hover:border-blue-500 transition-colors appearance-none cursor-pointer flex-shrink-0"
                 >
                   {monthNames.map((name, index) => (
                     <option key={index} value={String(index)}>{name}</option>
@@ -805,25 +807,25 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
             </div>
             <div className="mb-3 space-y-2">
               <div>
-                <p className="text-xs text-[#6B7560] mb-1">Consumo sem Sistema</p>
-                <p className="text-2xl font-bold text-gray-900">
+                <p className="text-xs text-[#6B7560] mb-1">Consumo com Sistema</p>
+                <p className="text-xl sm:text-2xl font-bold text-gray-900">
                   R${ensureNonNegative(currentPeriodData?.consumo || 0).toLocaleString('pt-BR')}
                 </p>
               </div>
               <div className="border-t border-blue-200 pt-2">
-                <p className="text-xs text-[#6B7560] mb-1">Consumo com Sistema</p>
-                <p className="text-lg font-bold text-blue-600">
+                <p className="text-xs text-[#6B7560] mb-1">Economia</p>
+                <p className="text-base sm:text-lg font-bold text-blue-600">
                   R${ensureNonNegative(currentPeriodData?.consumoSemSistema || 0).toLocaleString('pt-BR')}
+                </p>
+              </div>
+              <div className="border-t border-blue-200 pt-2">
+                <p className="text-xs text-[#6B7560] mb-1">Consumo sem Sistema</p>
+                <p className="text-base sm:text-lg font-bold text-gray-900">
+                  R${ensureNonNegative((currentPeriodData?.consumo || 0) + (currentPeriodData?.consumoSemSistema || 0)).toLocaleString('pt-BR')}
                 </p>
               </div>
             </div>
             <div className="bg-blue-50/50 rounded p-2 space-y-1">
-              <p className="text-xs text-[#6B7560]">Meta: <span className="font-semibold text-gray-900">R${ensureNonNegative(displayMeta).toLocaleString('pt-BR')}</span></p>
-              <p className="text-xs text-[#6B7560]">
-                Economia: <span className="font-semibold text-[#1F4532]">
-                  R${ensureNonNegative((currentPeriodData?.consumo || 0) - (currentPeriodData?.consumoSemSistema || 0)).toLocaleString('pt-BR')}
-                </span>
-              </p>
               <div className="border-t border-blue-200 pt-1 mt-1">
                 {periodFilter === 'monthly' ? (
                   <p className="text-xs text-[#6B7560]">
@@ -844,8 +846,8 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
 
           {/* Redução Mensal Card */}
           {(periodFilter === 'monthly' || periodFilter === 'daily') && (
-            <div className="bg-gradient-to-br from-[#10b981] to-[#059669] rounded-lg p-5 shadow-md border border-[#10b981]/20 text-white flex flex-col justify-center hover:shadow-lg transition-shadow h-fit">
-              <p className="text-3xl font-bold mb-1 text-center">{monthlyEconomyPercentage.toFixed(1)}%</p>
+            <div className="bg-gradient-to-br from-[#10b981] to-[#059669] rounded-lg p-3 sm:p-5 shadow-md border border-[#10b981]/20 text-white flex flex-col justify-center hover:shadow-lg transition-shadow h-fit">
+              <p className="text-2xl sm:text-3xl font-bold mb-1 text-center">{monthlyEconomyPercentage.toFixed(1)}%</p>
               <p className="text-xs font-semibold text-center leading-tight">
                 ↓ Redução Mensal
               </p>
@@ -855,32 +857,33 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
       </div>
 
       {/* Info and Filter Bar */}
-      <div className="flex items-center justify-between bg-white rounded-lg p-3 shadow-md border border-[#E8DCC8]">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-2 bg-white rounded-lg p-3 shadow-md border border-[#E8DCC8]">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-gray-200 flex items-center justify-center">
+          <div className="w-8 h-8 rounded-lg bg-gray-200 flex items-center justify-center flex-shrink-0">
             <span className="text-sm font-bold text-[#6B7560]">E</span>
           </div>
           <div>
-            <p className="text-xs font-semibold text-[#1F4532]">Unidade {selectedEstablishment}</p>
-            <p className="text-xs text-gray-500">Reais (R$)</p>
+            <p className="text-xs text-gray-500">Sistema de Gestão de Energia</p>
+            <p className="text-xs font-semibold text-[#1F4532]">Reais (R$)</p>
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-gray-500 font-medium">Período:</span>
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className="text-xs text-gray-500 font-medium whitespace-nowrap">Período:</span>
           <div className="flex items-center gap-1">
             <UITooltip>
               <TooltipTrigger asChild>
                 <button
                   onClick={() => handlePeriodChange('monthly')}
-                  className={`flex items-center gap-1 px-3 py-1.5 rounded-lg font-medium text-xs transition-all ${
+                  className={`flex items-center gap-1 px-2 sm:px-3 py-1.5 rounded-lg font-medium text-xs transition-all ${
                     periodFilter === 'monthly'
                       ? 'bg-[#1F4532] text-white'
                       : 'bg-[#E8DCC8] text-[#1F4532] hover:bg-[#E8DCC8]'
                   }`}
                 >
                   <Calendar className="w-3 h-3" />
-                  <span>Mensal</span>
+                  <span className="hidden sm:inline">Mensal</span>
+                  <span className="sm:hidden">M</span>
                 </button>
               </TooltipTrigger>
               <TooltipContent>Visualizar dados por mês</TooltipContent>
@@ -889,14 +892,15 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
               <TooltipTrigger asChild>
                 <button
                   onClick={() => handlePeriodChange('daily')}
-                  className={`flex items-center gap-1 px-3 py-1.5 rounded-lg font-medium text-xs transition-all ${
+                  className={`flex items-center gap-1 px-2 sm:px-3 py-1.5 rounded-lg font-medium text-xs transition-all ${
                     periodFilter === 'daily'
                       ? 'bg-[#1F4532] text-white'
                       : 'bg-[#E8DCC8] text-[#1F4532] hover:bg-[#E8DCC8]'
                   }`}
                 >
                   <Calendar className="w-3 h-3" />
-                  <span>Diário</span>
+                  <span className="hidden sm:inline">Diário</span>
+                  <span className="sm:hidden">D</span>
                 </button>
               </TooltipTrigger>
               <TooltipContent>Visualizar dados por dia</TooltipContent>
@@ -906,10 +910,10 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
       </div>
 
       {/* Main Content - Graph and Right Panel */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 md:gap-4">
         {/* Large Graph Section */}
-        <div className="col-span-1 lg:col-span-2 bg-white rounded-lg p-6 shadow-md border border-[#E8DCC8] hover:shadow-lg transition-shadow">
-          <h3 className="text-sm font-bold text-gray-900 mb-1">
+        <div className="col-span-1 lg:col-span-2 bg-white rounded-lg p-4 sm:p-6 shadow-md border border-[#E8DCC8] hover:shadow-lg transition-shadow">
+          <h3 className="text-xs sm:text-sm font-bold text-gray-900 mb-1">
             Gráfico {periodFilter === 'monthly' ? 'Mensal' : 'Diário'}
           </h3>
           <p className="text-xs text-gray-500 mb-3">
@@ -917,7 +921,7 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
           </p>
 
           {loading ? (
-            <div className="h-96 flex items-center justify-center">
+            <div className="h-64 sm:h-96 flex items-center justify-center">
               <div className="text-center">
                 <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-600 mx-auto mb-3"></div>
                 <p className="text-xs text-[#6B7560]">Carregando dados da API...</p>
@@ -931,23 +935,23 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
               </div>
             </div>
           ) : chartData.length > 0 ? (
-            <div style={{ width: '100%', height: '350px' }}>
+            <div style={{ width: '100%', height: 'clamp(250px, 80vw, 350px)' }}>
               <ReactECharts
                 option={periodFilter === 'monthly' ? getMonthlyChartOption() : getDailyChartOption()}
                 style={{ width: '100%', height: '100%' }}
               />
             </div>
           ) : (
-            <div className="h-96 flex items-center justify-center text-gray-500">
+            <div className="h-64 sm:h-96 flex items-center justify-center text-gray-500">
               <p>Nenhum dado disponível</p>
             </div>
           )}
         </div>
 
         {/* Right Panel */}
-        <div className="space-y-3">
+        <div className="space-y-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-3 md:gap-4">
           {/* Status Card */}
-          <div className="bg-white rounded-lg p-4 shadow-md border border-[#E8DCC8] hover:shadow-lg transition-shadow">
+          <div className="bg-white rounded-lg p-3 sm:p-4 shadow-md border border-[#E8DCC8] hover:shadow-lg transition-shadow">
             <div className="flex items-center justify-between mb-3">
               <p className="text-xs font-bold text-[#1F4532] uppercase">Status</p>
               <Leaf className="w-4 h-4 text-[#1F4532]" />
@@ -965,15 +969,15 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
           {/* Update Table */}
           <div className="bg-white rounded-lg p-3 shadow-md border border-[#E8DCC8] hover:shadow-lg transition-shadow">
             <div className="flex items-center justify-between mb-2">
-              <p className="text-xs font-bold text-[#1F4532] uppercase">{periodFilter === 'daily' ? 'Dia / Metas / Atualiz.' : 'Mês / Metas / Atualiz.'}</p>
-              <span className="text-xs text-gray-500">{monthMetaTablePageIndex + 1} / {totalPages}</span>
+              <p className="text-xs font-bold text-[#1F4532] uppercase truncate">{periodFilter === 'daily' ? 'Dia / Metas / At.' : 'Mês / Metas / At.'}</p>
+              <span className="text-xs text-gray-500 whitespace-nowrap ml-2">{monthMetaTablePageIndex + 1} / {totalPages}</span>
             </div>
-            <div className="space-y-1">
+            <div className="space-y-1 max-h-40 overflow-y-auto sm:max-h-48">
               {paginatedMonthsData.map((item, index) => (
                 <div key={index} className="flex justify-between items-center text-xs border-b border-[#D4CFC0] pb-1 last:border-b-0 hover:bg-[#F0EAD2] px-1 py-0.5 rounded transition-colors">
-                  <span className="font-bold text-[#1F4532] min-w-10">{item.month}</span>
+                  <span className="font-bold text-[#1F4532] min-w-8">{item.month}</span>
                   <span className="text-[#A3B18A] flex-1 text-center font-medium text-xs">{item.value}</span>
-                  <span className="font-bold text-gray-900 text-right w-10 text-xs">{item.atualização}</span>
+                  <span className="font-bold text-gray-900 text-right w-8 text-xs">{item.atualização}</span>
                 </div>
               ))}
             </div>
@@ -983,37 +987,37 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
                 disabled={monthMetaTablePageIndex === 0}
                 className="flex-1 px-2 py-1.5 bg-[#E8DCC8] hover:bg-[#E8DCC8] disabled:bg-[#F0EAD2] disabled:text-gray-400 text-[#1F4532] rounded text-xs font-medium transition-colors"
               >
-                ← Anterior
+                ←
               </button>
               <button
                 onClick={() => setMonthMetaTablePageIndex(Math.min(totalPages - 1, monthMetaTablePageIndex + 1))}
                 disabled={monthMetaTablePageIndex >= totalPages - 1}
                 className="flex-1 px-2 py-1.5 bg-[#E8DCC8] hover:bg-[#E8DCC8] disabled:bg-[#F0EAD2] disabled:text-gray-400 text-[#1F4532] rounded text-xs font-medium transition-colors"
               >
-                Próximo →
+                →
               </button>
             </div>
           </div>
 
           {/* Activation Time */}
-          <div className="bg-white rounded-lg p-4 shadow-md border border-[#E8DCC8] hover:shadow-lg transition-shadow space-y-3">
-            <div className="flex items-center justify-between mb-2">
+          <div className="bg-white rounded-lg p-3 sm:p-4 shadow-md border border-[#E8DCC8] hover:shadow-lg transition-shadow space-y-3">
+            <div className="flex items-center justify-between mb-2 gap-2">
               <div className="flex items-center gap-2">
-                <Clock className="w-5 h-5 text-[#A3B18A]" />
-                <p className="text-xs font-bold text-[#1F4532] uppercase">Tempo de Atuação</p>
+                <Clock className="w-4 sm:w-5 h-4 sm:h-5 text-[#A3B18A] flex-shrink-0" />
+                <p className="text-xs font-bold text-[#1F4532] uppercase truncate">Tempo de Atuação</p>
               </div>
             </div>
 
-            <div className="space-y-2.5">
+            <div className="space-y-2">
               <div>
                 <p className="text-xs text-[#6B7560] font-semibold mb-1">Meta Mensal (h)</p>
-                <p className="text-lg font-bold text-[#A3B18A]">
+                <p className="text-base sm:text-lg font-bold text-[#A3B18A]">
                   {apiData?.meta_tempo_atuacao_mensal?.[selectedPeriodIndex]?.toFixed(1) || '720.0'}h
                 </p>
               </div>
               <div className="border-t border-[#E8DCC8] pt-2">
                 <p className="text-xs text-[#6B7560] font-semibold mb-1">Meta Diária (h)</p>
-                <p className="text-lg font-bold text-[#A3B18A]">
+                <p className="text-base sm:text-lg font-bold text-[#A3B18A]">
                   {apiData?.meta_tempo_atuacao_diaria?.[selectedPeriodIndex]?.toFixed(1) || '24.0'}h
                 </p>
               </div>
