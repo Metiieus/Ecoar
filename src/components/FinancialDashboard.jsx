@@ -646,30 +646,31 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
                   onChange={handleCostInputChange}
                   onKeyPress={handleCostKeyPress}
                   placeholder="0"
-                  className="w-full px-3 py-2 border-2 border-[#A3B18A] rounded text-sm focus:outline-none focus:ring-2 focus:ring-[#1F4532]"
+                  className="w-full px-2 py-1.5 sm:px-3 sm:py-2 border-2 border-[#A3B18A] rounded text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#1F4532]"
                 />
                 <div className="flex gap-2">
                   <button
                     onClick={handleSaveCostMeta}
-                    className="flex-1 px-3 py-2 bg-[#1F4532] hover:bg-[#2D5740] text-white rounded text-xs font-medium transition-colors flex items-center justify-center gap-1"
+                    className="flex-1 px-2 py-1.5 sm:px-3 sm:py-2 bg-[#1F4532] hover:bg-[#2D5740] text-white rounded text-xs font-medium transition-colors flex items-center justify-center gap-1"
                   >
-                    <Check className="w-4 h-4" />
-                    Salvar
+                    <Check className="w-3 sm:w-4 h-3 sm:h-4" />
+                    <span className="hidden sm:inline">Salvar</span>
                   </button>
                   <button
                     onClick={() => {
                       setIsEditingMeta(false);
                       setCostInputValue(currentMeta.toString());
                     }}
-                    className="flex-1 px-3 py-2 bg-gray-200 hover:bg-gray-300 text-[#1F4532] rounded text-xs font-medium transition-colors"
+                    className="flex-1 px-2 py-1.5 sm:px-3 sm:py-2 bg-gray-200 hover:bg-gray-300 text-[#1F4532] rounded text-xs font-medium transition-colors"
                   >
-                    Cancelar
+                    <span className="hidden sm:inline">Cancelar</span>
+                    <span className="sm:hidden">×</span>
                   </button>
                 </div>
               </div>
             ) : (
               <div className="space-y-2">
-                <p className="text-3xl font-bold text-gray-900">R${ensureNonNegative(displayMeta).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
+                <p className="text-2xl sm:text-3xl font-bold text-gray-900">R${ensureNonNegative(displayMeta).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
                 <button
                   onClick={() => {
                     if (!isApiMetaAvailable) {
@@ -679,7 +680,7 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
                     }
                   }}
                   disabled={isApiMetaAvailable}
-                  className={`w-full px-3 py-2 rounded text-xs font-medium transition-colors flex items-center justify-center gap-2 ${
+                  className={`w-full px-2 py-1.5 sm:px-3 sm:py-2 rounded text-xs font-medium transition-colors flex items-center justify-center gap-2 ${
                     isApiMetaAvailable
                       ? 'bg-gray-100 text-gray-500 cursor-not-allowed'
                       : 'bg-[#E8DCC8] hover:bg-[#E8DCC8] text-[#1F4532]'
@@ -691,8 +692,9 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
                     </>
                   ) : (
                     <>
-                      <Edit2 className="w-4 h-4" />
-                      Editar Meta
+                      <Edit2 className="w-3 sm:w-4 h-3 sm:h-4" />
+                      <span className="hidden sm:inline">Editar Meta</span>
+                      <span className="sm:hidden">Editar</span>
                     </>
                   )}
                 </button>
