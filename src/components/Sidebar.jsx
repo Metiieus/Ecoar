@@ -1,10 +1,9 @@
-import { LayoutDashboard, BarChart3, Settings, Clock, LogOut } from 'lucide-react';
+import { LayoutDashboard, BarChart3, Settings, LogOut } from 'lucide-react';
 import { Tooltip, TooltipTrigger, TooltipContent } from './ui/tooltip';
 
 const Sidebar = ({ activeTab = 'dashboard', setActiveTab, onLogout }) => {
   const menuItems = [
     { id: 'dashboard', icon: LayoutDashboard, label: 'Dashboard', tooltip: 'Visualize métricas e gráficos de energia' },
-    { id: 'metas', icon: Clock, label: 'Metas de Tempo', tooltip: 'Gerencie metas de tempo de atuação' },
     { id: 'consumption', icon: BarChart3, label: 'Consumo', tooltip: 'Em breve', disabled: true },
     { id: 'control', icon: Settings, label: 'Central de Controle', tooltip: 'Em breve', disabled: true }
   ];
