@@ -29,7 +29,12 @@ const Sidebar = ({ activeTab = 'dashboard', setActiveTab, onLogout, onClose }) =
           <Tooltip key={item.id}>
             <TooltipTrigger asChild>
               <button
-                onClick={() => !item.disabled && setActiveTab(item.id)}
+                onClick={() => {
+                  if (!item.disabled) {
+                    setActiveTab(item.id);
+                    if (onClose) onClose();
+                  }
+                }}
                 disabled={item.disabled}
                 className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 relative ${
                   item.disabled
