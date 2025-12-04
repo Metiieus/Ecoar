@@ -32,14 +32,22 @@ const Header = ({ selectedEstablishment, onEstablishmentChange, selectedDeviceId
   };
 
   return (
-    <div className="bg-white border-b border-[#E8DCC8] px-8 py-5 sticky top-0 z-10 shadow-sm">
-      <div className="flex items-center justify-between">
-        <div>
-          <p className="text-sm text-[#6B7560]">Sistema de Gestão de Energia</p>
-          <h1 className="text-2xl font-bold text-[#1F4532] mt-1">Ecoar</h1>
+    <div className="bg-white border-b border-[#E8DCC8] px-4 sm:px-6 lg:px-8 py-4 sm:py-5 sticky top-0 z-10 shadow-sm">
+      <div className="flex items-center justify-between gap-4">
+        <div className="flex items-center gap-3 flex-1 min-w-0">
+          <button
+            onClick={onToggleSidebar}
+            className="lg:hidden flex-shrink-0 w-10 h-10 rounded-lg bg-[#E8DCC8] hover:bg-[#D4CFC0] flex items-center justify-center transition-colors"
+          >
+            <Menu className="w-5 h-5 text-[#1F4532]" />
+          </button>
+          <div className="min-w-0">
+            <p className="text-xs sm:text-sm text-[#6B7560]">Sistema de Gestão de Energia</p>
+            <h1 className="text-lg sm:text-2xl font-bold text-[#1F4532] mt-1">Ecoar</h1>
+          </div>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3 flex-wrap justify-end">
           {/* Establishment Dropdown */}
           <div className="relative">
             <Tooltip>
