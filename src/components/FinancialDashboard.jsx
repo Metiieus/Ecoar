@@ -626,16 +626,16 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
               ? 'bg-[#F0EAD2] border-[#D4CFC0] border-2'
               : 'bg-white border-[#E8DCC8] hover:shadow-lg'
           }`}>
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex flex-col gap-0.5">
+            <div className="flex items-center justify-between mb-3 gap-2">
+              <div className="flex flex-col gap-0.5 min-w-0">
                 <p className="text-xs font-bold text-[#6B7560] uppercase tracking-wide">
                   {periodFilter === 'daily' ? 'Meta Diária' : 'Meta Mensal'}
                 </p>
-                <p className="text-xs text-[#A3B18A]">
+                <p className="text-xs text-[#A3B18A] truncate">
                   {periodFilter === 'daily' ? `Dia ${selectedPeriodIndex + 1}` : monthNames[selectedPeriodIndex]}
                 </p>
               </div>
-              <TrendingDown className="w-4 h-4 text-[#1F4532]" />
+              <TrendingDown className="w-4 h-4 text-[#1F4532] flex-shrink-0" />
             </div>
             {isEditingMeta && !isApiMetaAvailable ? (
               <div className="space-y-2">
