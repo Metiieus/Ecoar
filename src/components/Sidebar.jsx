@@ -1,7 +1,7 @@
 import { LayoutDashboard, BarChart3, Settings, CheckCircle, LogOut } from 'lucide-react';
 import { Tooltip, TooltipTrigger, TooltipContent } from './ui/tooltip';
 
-const Sidebar = ({ activeTab = 'dashboard', setActiveTab, onLogout }) => {
+const Sidebar = ({ activeTab = 'dashboard', setActiveTab, onLogout, onClose }) => {
   const menuItems = [
     { id: 'dashboard', icon: LayoutDashboard, label: 'Dashboard', tooltip: 'Visualize métricas e gráficos de energia' },
     { id: 'validator', icon: CheckCircle, label: 'Validador de Dados', tooltip: 'Valide os dados recebidos da API' },
@@ -10,7 +10,7 @@ const Sidebar = ({ activeTab = 'dashboard', setActiveTab, onLogout }) => {
   ];
 
   return (
-    <div className="w-64 h-screen bg-gradient-to-b from-[#1F4532] to-[#2D5740] text-[#F0EAD2] flex flex-col fixed left-0 top-0 shadow-lg">
+    <div className="w-64 h-screen bg-gradient-to-b from-[#1F4532] to-[#2D5740] text-[#F0EAD2] flex flex-col shadow-lg">
       {/* Logo */}
       <div className="p-6 border-b border-[#A3B18A]/40">
         <div className="flex items-center gap-3">
