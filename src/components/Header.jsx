@@ -36,53 +36,12 @@ const Header = ({ selectedDeviceId, onDeviceChange, onLogout, onToggleSidebar, s
             <Menu className="w-4 sm:w-5 h-4 sm:h-5 text-[#1F4532]" />
           </button>
           <div className="min-w-0">
-            <p className="text-xs text-[#6B7560] truncate">Sistema de Gestão</p>
-            <h1 className="text-base sm:text-2xl font-bold text-[#1F4532] mt-0.5 sm:mt-1">Ecoar</h1>
+            <p className="text-xs text-[#6B7560] truncate">Sistema de Gestão de Energia</p>
+            <h1 className="text-base sm:text-2xl font-bold text-[#1F4532] mt-0.5 sm:mt-1 truncate">{clientName}</h1>
           </div>
         </div>
 
         <div className="flex items-center gap-1 sm:gap-3 flex-wrap justify-end">
-          {/* Establishment Dropdown */}
-          <div className="relative hidden md:block">
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <button
-                  onClick={() => setIsEstablishmentDropdownOpen(!isEstablishmentDropdownOpen)}
-                  className="flex items-center gap-2 px-2 sm:px-4 py-2 rounded-lg bg-[#E8DCC8] hover:bg-[#D4CFC0] transition-colors text-xs sm:text-sm"
-                >
-                  <span className="hidden lg:inline font-medium text-[#1F4532]">{currentEstablishment.name}</span>
-                  <ChevronDown className="w-3 sm:w-4 h-3 sm:h-4 text-[#6B7560] flex-shrink-0" />
-                </button>
-              </TooltipTrigger>
-              <TooltipContent>
-                Selecione uma unidade para visualizar dados
-              </TooltipContent>
-            </Tooltip>
-
-            {isEstablishmentDropdownOpen && (
-              <div className="absolute top-full right-0 mt-2 w-56 sm:w-64 bg-white rounded-lg shadow-lg border border-[#E8DCC8] z-50 max-h-96 overflow-y-auto">
-                {establishments.map((est) => (
-                  <button
-                    key={est.id}
-                    onClick={() => handleSelectEstablishment(est.id)}
-                    className={`w-full text-left px-3 sm:px-4 py-2 sm:py-3 hover:bg-[#F0EAD2] transition-colors border-b border-[#E8DCC8] last:border-b-0 ${
-                      selectedEstablishment === est.id ? 'bg-[#A3B18A]/20' : ''
-                    }`}
-                  >
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-xs sm:text-sm font-medium text-[#1F4532]">{est.name}</p>
-                        <p className="text-xs text-[#6B7560]">{est.abbreviation}</p>
-                      </div>
-                      {selectedEstablishment === est.id && (
-                        <div className="w-2 h-2 rounded-full bg-[#1F4532]"></div>
-                      )}
-                    </div>
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
 
           {/* Device Selector Dropdown */}
           <div className="relative hidden md:block">
