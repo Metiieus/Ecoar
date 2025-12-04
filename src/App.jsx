@@ -82,6 +82,10 @@ function AppContent() {
             </>
           )}
 
+          {activeSidebarTab === 'metas' && (
+            <MetasManagement />
+          )}
+
           {activeSidebarTab === 'consumption' && (
             <ConsumptionTab />
           )}
