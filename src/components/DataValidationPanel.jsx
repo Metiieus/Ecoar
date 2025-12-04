@@ -63,7 +63,7 @@ const DataValidationPanel = () => {
       {validationResults && (
         <div className="space-y-4">
           {/* Summary Cards */}
-          <div className="grid grid-cols-4 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
             <div className="bg-blue-50 rounded-lg p-3 border border-blue-200">
               <p className="text-xs text-blue-600 font-semibold mb-1">Total</p>
               <p className="text-2xl font-bold text-blue-900">{validationResults.summary.total}</p>

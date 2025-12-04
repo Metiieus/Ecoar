@@ -85,7 +85,7 @@ const ControlCenter = () => {
                 </div>
 
                 {/* Main Status Row */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-4">
                   <div className="bg-white/60 rounded-lg p-3">
                     <p className="text-xs font-semibold text-gray-600 uppercase tracking-widest mb-1">Tempo Ativo</p>
                     <p className="text-xl font-bold text-gray-900">{device.activeTime}h</p>
