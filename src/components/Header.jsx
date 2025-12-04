@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { Bell, ChevronDown, LogOut, User, Menu } from 'lucide-react';
 import { Tooltip, TooltipTrigger, TooltipContent } from './ui/tooltip';
-import { establishments } from '../data/establishments';
 import { devices, DEVICE_ID_ALL, getDeviceById } from '../data/devices';
 import { useAuth } from '../context/AuthContext';
+import { useClient } from '../context/ClientContext';
 
 const Header = ({ selectedEstablishment, onEstablishmentChange, selectedDeviceId, onDeviceChange, onLogout, onToggleSidebar, sidebarOpen }) => {
   const [isEstablishmentDropdownOpen, setIsEstablishmentDropdownOpen] = useState(false);
