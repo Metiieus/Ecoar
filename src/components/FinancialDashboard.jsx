@@ -331,15 +331,6 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
     return getActivationHours(apiData, periodFilter, selectedPeriodIndex);
   }, [apiData, periodFilter, selectedPeriodIndex]);
 
-  // Get array of daily indices for daily view
-  const dailyMetas = useMemo(() => {
-    if (periodFilter === 'daily') {
-      const dailyCount = apiData?.consumo_diario_mes_corrente?.length || 30;
-      return Array.from({ length: dailyCount }, (_, i) => i);
-    }
-    return [];
-  }, [apiData, periodFilter]);
-
   // Chart data for monthly/daily visualization
   const chartData = useMemo(() => {
     if (periodFilter === 'monthly') {
