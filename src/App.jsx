@@ -6,6 +6,7 @@ import FinancialDashboard from './components/FinancialDashboard';
 import DeviceDetailView from './components/DeviceDetailView';
 import ControlCenter from './components/ControlCenter';
 import ConsumptionTab from './components/ConsumptionTab';
+import Device39Validator from './components/Device39Validator';
 import Login from './components/Login';
 import { ApiDataProvider, useApiDataContext } from './context/ApiDataContext';
 
