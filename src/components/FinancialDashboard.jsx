@@ -990,46 +990,47 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
             </div>
             <div className="space-y-2">
               <p className="text-xs text-[#6B7560] font-semibold">
-                {periodFilter === 'daily' ? 'Atuação Hoje (h)' : 'Meta Mensal (h)'}
+                {periodFilter === 'daily' ? `Meta Diária - Dia ${selectedPeriodIndex + 1} (h)` : 'Meta Mensal (h)'}
               </p>
-              {periodFilter === 'monthly' ? (
-                isEditingTimeMeta ? (
-                  <div className="flex gap-2 items-center">
-                    <input
-                      autoFocus
-                      type="number"
-                      value={timeMetaInputValue}
-                      onChange={handleTimeMetaInputChange}
-                      onKeyPress={handleTimeMetaKeyPress}
-                      placeholder="0"
-                      className="flex-1 px-2 py-1 border-2 border-[#A3B18A] rounded text-sm focus:outline-none focus:ring-2 focus:ring-[#1F4532]"
-                    />
-                    <button
-                      onClick={handleSaveTimeMeta}
-                      className="px-2 py-1 bg-[#F0EAD2]0 hover:bg-[#1F4532] text-white rounded text-xs font-medium transition-colors"
-                      title="Salvar"
-                    >
-                      ✓
-                    </button>
-                  </div>
-                ) : (
-                  <div className="flex items-center justify-between">
-                    <p className="text-lg font-bold text-[#A3B18A]">{currentTimeMeta.toFixed(1)}h</p>
-                    <button
-                      onClick={() => {
-                        console.log('📝 Iniciando edição de meta de tempo no card, valor atual:', currentTimeMeta);
-                        setTimeMetaInputValue(currentTimeMeta.toString());
-                        setIsEditingTimeMeta(true);
-                      }}
-                      className="px-1.5 py-0.5 bg-[#E8DCC8] hover:bg-[#D4CFC0] text-[#1F4532] rounded text-xs font-medium transition-colors"
-                      title="Editar meta"
-                    >
-                      <Edit2 className="w-3 h-3" />
-                    </button>
-                  </div>
-                )
+              {isEditingTimeMeta ? (
+                <div className="flex gap-2 items-center">
+                  <input
+                    autoFocus
+                    type="number"
+                    value={timeMetaInputValue}
+                    onChange={handleTimeMetaInputChange}
+                    onKeyPress={handleTimeMetaKeyPress}
+                    placeholder="0"
+                    className="flex-1 px-2 py-1 border-2 border-[#A3B18A] rounded text-sm focus:outline-none focus:ring-2 focus:ring-[#1F4532]"
+                  />
+                  <button
+                    onClick={handleSaveTimeMeta}
+                    className="px-2 py-1 bg-[#1F4532] hover:bg-[#2D5740] text-white rounded text-xs font-medium transition-colors"
+                    title="Salvar"
+                  >
+                    ✓
+                  </button>
+                </div>
               ) : (
-                <p className="text-lg font-bold text-[#A3B18A]">{activationHours.toFixed(1)}h</p>
+                <div className="flex items-center justify-between">
+                  <p className="text-lg font-bold text-[#A3B18A]">{currentTimeMeta.toFixed(1)}h</p>
+                  <button
+                    onClick={() => {
+                      console.log('📝 Iniciando edição de meta de tempo no card, valor atual:', currentTimeMeta);
+                      setTimeMetaInputValue(currentTimeMeta.toString());
+                      setIsEditingTimeMeta(true);
+                    }}
+                    className="px-1.5 py-0.5 bg-[#E8DCC8] hover:bg-[#D4CFC0] text-[#1F4532] rounded text-xs font-medium transition-colors"
+                    title="Editar meta"
+                  >
+                    <Edit2 className="w-3 h-3" />
+                  </button>
+                </div>
+              )}
+              {periodFilter === 'daily' && (
+                <p className="text-xs text-gray-500 mt-1">
+                  Horas atuais: {activationHours.toFixed(1)}h
+                </p>
               )}
             </div>
             <div className="space-y-2 border-t border-[#E8DCC8] pt-3">
