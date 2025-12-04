@@ -5,19 +5,13 @@ import { devices, DEVICE_ID_ALL, getDeviceById } from '../data/devices';
 import { useAuth } from '../context/AuthContext';
 import { useClient } from '../context/ClientContext';
 
-const Header = ({ selectedEstablishment, onEstablishmentChange, selectedDeviceId, onDeviceChange, onLogout, onToggleSidebar, sidebarOpen }) => {
-  const [isEstablishmentDropdownOpen, setIsEstablishmentDropdownOpen] = useState(false);
+const Header = ({ selectedDeviceId, onDeviceChange, onLogout, onToggleSidebar, sidebarOpen }) => {
   const [isDeviceDropdownOpen, setIsDeviceDropdownOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const { clientName } = useClient();
 
-  const currentEstablishment = establishments.find(est => est.id === selectedEstablishment) || establishments[0];
   const currentDevice = getDeviceById(selectedDeviceId) || devices[0];
   const userEmail = localStorage.getItem('userEmail') || 'usuario@example.com';
-
-  const handleSelectEstablishment = (establishmentId) => {
-    onEstablishmentChange(establishmentId);
-    setIsEstablishmentDropdownOpen(false);
-  };
 
   const handleSelectDevice = (deviceId) => {
     onDeviceChange(deviceId);
