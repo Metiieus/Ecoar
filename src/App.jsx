@@ -9,6 +9,7 @@ import ConsumptionTab from './components/ConsumptionTab';
 import Device39Validator from './components/Device39Validator';
 import Login from './components/Login';
 import { ApiDataProvider, useApiDataContext } from './context/ApiDataContext';
+import { ClientProvider } from './context/ClientContext';
 
 function AppContent() {
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
