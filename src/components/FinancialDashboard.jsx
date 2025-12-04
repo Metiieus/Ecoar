@@ -195,30 +195,32 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
 
   const handleSaveTimeMeta = async () => {
     const newValue = parseFloat(timeMetaInputValue);
-    console.log('🔧 Attempting to save monthly time meta:', {
+    const filterType = periodFilter === 'daily' ? 'daily' : 'monthly';
+    console.log('🔧 Attempting to save time meta:', {
       newValue,
       deviceId: selectedDeviceId,
       periodIndex: selectedPeriodIndex,
-      isValid: !isNaN(newValue) && newValue > 0
+      filterType,
+      isValid: !isNaN(newValue) && newValue >= 0
     });
 
-    if (!isNaN(newValue) && newValue > 0) {
+    if (!isNaN(newValue) && newValue >= 0) {
       try {
-        const success = await saveActivationTimeMeta(selectedDeviceId, 'monthly', selectedPeriodIndex, newValue);
+        const success = await saveActivationTimeMeta(selectedDeviceId, filterType, selectedPeriodIndex, newValue);
         if (success) {
           setIsEditingTimeMeta(false);
-          console.log('✅ Monthly time meta saved successfully');
+          console.log(`✅ ${filterType === 'daily' ? 'Daily' : 'Monthly'} time meta saved successfully`);
         } else {
-          console.error('❌ Failed to save monthly time meta');
-          alert('Erro ao salvar meta mensal de tempo. Por favor, tente novamente.');
+          console.error(`❌ Failed to save ${filterType} time meta`);
+          alert(`Erro ao salvar meta de tempo. Por favor, tente novamente.`);
         }
       } catch (error) {
-        console.error('❌ Error saving monthly time meta:', error);
-        alert('Erro ao salvar meta mensal de tempo. Por favor, tente novamente.');
+        console.error(`❌ Error saving ${filterType} time meta:`, error);
+        alert(`Erro ao salvar meta de tempo. Por favor, tente novamente.`);
       }
     } else {
-      console.warn('❌ Invalid value for monthly time meta:', timeMetaInputValue);
-      alert('Por favor, insira um valor válido para a meta mensal de tempo');
+      console.warn('❌ Invalid value for time meta:', timeMetaInputValue);
+      alert('Por favor, insira um valor válido para a meta de tempo (≥ 0)');
     }
   };
 
