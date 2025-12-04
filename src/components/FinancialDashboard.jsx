@@ -824,6 +824,21 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
                   R${ensureNonNegative((currentPeriodData?.consumo || 0) - (currentPeriodData?.consumoSemSistema || 0)).toLocaleString('pt-BR')}
                 </span>
               </p>
+              <div className="border-t border-blue-200 pt-1 mt-1">
+                {periodFilter === 'monthly' ? (
+                  <p className="text-xs text-[#6B7560]">
+                    Meta Economia Mensal: <span className="font-semibold text-[#1F4532]">
+                      R${ensureNonNegative(apiData?.meta_economia_mensal?.[selectedPeriodIndex] || 600).toLocaleString('pt-BR')}
+                    </span>
+                  </p>
+                ) : (
+                  <p className="text-xs text-[#6B7560]">
+                    Meta Economia Diária: <span className="font-semibold text-[#1F4532]">
+                      R${ensureNonNegative(apiData?.meta_economia_diaria?.[selectedPeriodIndex] || 20).toLocaleString('pt-BR')}
+                    </span>
+                  </p>
+                )}
+              </div>
             </div>
           </div>
 
