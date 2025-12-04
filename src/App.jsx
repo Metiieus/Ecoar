@@ -17,7 +17,6 @@ function AppContent() {
     return localStorage.getItem('isAuthenticated') === 'true';
   });
   const [activeSidebarTab, setActiveSidebarTab] = useState('dashboard');
-  const [selectedEstablishment, setSelectedEstablishment] = useState(1);
   const [selectedApiDeviceId, setSelectedApiDeviceId] = useState(33);
   const [selectedDeviceId, setSelectedDeviceId] = useState(() => {
     const params = new URLSearchParams(window.location.search);
