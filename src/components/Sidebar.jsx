@@ -18,7 +18,7 @@ const Sidebar = ({ activeTab = 'dashboard', setActiveTab, onLogout, onClose }) =
             <span className="text-lg font-bold">E</span>
           </div>
           <div>
-            <h1 className="text-base sm:text-lg font-bold tracking-tight truncate">{clientName}</h1>
+            <h1 className="text-base sm:text-lg font-bold tracking-tight">Ecoar</h1>
           </div>
         </div>
       </div>
