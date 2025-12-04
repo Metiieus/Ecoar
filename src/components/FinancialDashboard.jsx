@@ -735,15 +735,15 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
         </div>
 
         {/* Economia Total - Gauge Chart */}
-        <div className="bg-white rounded-lg p-4 sm:p-6 shadow-md border border-[#E8DCC8] hover:shadow-lg transition-shadow col-span-1 sm:col-span-2 lg:col-span-2 flex flex-col h-auto lg:h-96">
-          <div className="mb-4">
-            <p className="text-sm font-bold text-gray-900 uppercase tracking-wide">
+        <div className="bg-white rounded-lg p-3 sm:p-6 shadow-md border border-[#E8DCC8] hover:shadow-lg transition-shadow col-span-1 sm:col-span-2 lg:col-span-2 flex flex-col h-auto lg:h-96">
+          <div className="mb-3 sm:mb-4">
+            <p className="text-xs sm:text-sm font-bold text-gray-900 uppercase tracking-wide">
               Economia Total
             </p>
             <p className="text-xs text-gray-500 mt-1">Percentual de Economia Alcançada</p>
           </div>
-          <div className="flex-1 flex flex-col sm:flex-row items-center justify-center gap-8 overflow-hidden">
-            <div className="flex-shrink-0 w-48 h-48 sm:w-72 sm:h-72 flex items-center justify-center">
+          <div className="flex-1 flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8 overflow-hidden">
+            <div className="flex-shrink-0 w-32 h-32 sm:w-48 sm:h-48 lg:w-72 lg:h-72 flex items-center justify-center">
               <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <GaugeChart
                   id="economia-gauge"
