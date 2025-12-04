@@ -1,9 +1,7 @@
 import { LayoutDashboard, BarChart3, Settings, CheckCircle, LogOut } from 'lucide-react';
 import { Tooltip, TooltipTrigger, TooltipContent } from './ui/tooltip';
-import { useClient } from '../context/ClientContext';
 
 const Sidebar = ({ activeTab = 'dashboard', setActiveTab, onLogout, onClose }) => {
-  const { clientName } = useClient();
   const menuItems = [
     { id: 'dashboard', icon: LayoutDashboard, label: 'Dashboard', tooltip: 'Visualize métricas e gráficos de energia' },
     { id: 'validator', icon: CheckCircle, label: 'Validador de Dados', tooltip: 'Valide os dados recebidos da API' },
