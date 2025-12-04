@@ -64,10 +64,10 @@ const Sidebar = ({ activeTab = 'dashboard', setActiveTab, onLogout, onClose }) =
       <div className="p-4 sm:p-6 border-t border-[#A3B18A]/40 space-y-4 flex-shrink-0">
         <div className="flex items-center gap-3">
           <div className="w-8 sm:w-10 h-8 sm:h-10 rounded-lg bg-[#A3B18A]/25 flex items-center justify-center flex-shrink-0">
-            <span className="text-xs sm:text-sm font-bold">E</span>
+            <span className="text-xs sm:text-sm font-bold">EA</span>
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-xs sm:text-sm font-semibold truncate">{clientName}</p>
+            <p className="text-xs sm:text-sm font-semibold truncate">Ecoar</p>
             <p className="text-xs text-[#D4CFC0]">Sistema v2.0</p>
           </div>
         </div>
