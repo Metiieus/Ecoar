@@ -733,7 +733,7 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
         </div>
 
         {/* Economia Total - Gauge Chart */}
-        <div className="bg-white rounded-lg p-6 shadow-md border border-[#E8DCC8] hover:shadow-lg transition-shadow col-span-1 lg:col-span-2 flex flex-col h-auto lg:h-96">
+        <div className="bg-white rounded-lg p-6 shadow-md border border-[#E8DCC8] hover:shadow-lg transition-shadow col-span-1 md:col-span-2 lg:col-span-2 flex flex-col h-auto lg:h-96">
           <div className="mb-4">
             <p className="text-sm font-bold text-gray-900 uppercase tracking-wide">
               Economia Total
