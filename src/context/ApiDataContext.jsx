@@ -200,16 +200,32 @@ export const ApiDataProvider = ({ children }) => {
         });
       }
 
-      if (deviceData.ocupacao_mensal) {
-        deviceData.ocupacao_mensal.forEach((val, idx) => {
-          aggregated.ocupacao_mensal[idx] = (aggregated.ocupacao_mensal[idx] || 0) + (Number(val) || 0);
-        });
+      // For occupancy, use device 33's values instead of aggregating
+      // Occupancy is a percentage metric and should not be summed
+      if (deviceData.ocupacao_mensal && !aggregated.ocupacao_mensal.some(v => v > 0)) {
+        if (Object.keys(devicesDataMap).indexOf(String(33)) !== -1 || devicesDataMap[33]) {
+          // Will be set from device 33 below
+        } else {
+          // Fallback: use first device's occupancy if device 33 is not available
+          deviceData.ocupacao_mensal.forEach((val, idx) => {
+            if (aggregated.ocupacao_mensal[idx] === 0) {
+              aggregated.ocupacao_mensal[idx] = Number(val) || 0;
+            }
+          });
+        }
       }
 
-      if (deviceData.ocupacao_diaria) {
-        deviceData.ocupacao_diaria.forEach((val, idx) => {
-          aggregated.ocupacao_diaria[idx] = (aggregated.ocupacao_diaria[idx] || 0) + (Number(val) || 0);
-        });
+      if (deviceData.ocupacao_diaria && !aggregated.ocupacao_diaria.some(v => v > 0)) {
+        if (Object.keys(devicesDataMap).indexOf(String(33)) !== -1 || devicesDataMap[33]) {
+          // Will be set from device 33 below
+        } else {
+          // Fallback: use first device's occupancy if device 33 is not available
+          deviceData.ocupacao_diaria.forEach((val, idx) => {
+            if (aggregated.ocupacao_diaria[idx] === 0) {
+              aggregated.ocupacao_diaria[idx] = Number(val) || 0;
+            }
+          });
+        }
       }
     });
 
