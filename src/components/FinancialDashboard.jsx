@@ -981,247 +981,26 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
           </div>
 
           {/* Activation Time */}
-          <div className="bg-white rounded-lg p-4 shadow-md border border-[#E8DCC8] hover:shadow-lg transition-shadow space-y-4">
-            <div className="flex items-center justify-between">
+          <div className="bg-white rounded-lg p-4 shadow-md border border-[#E8DCC8] hover:shadow-lg transition-shadow space-y-3">
+            <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
                 <Clock className="w-5 h-5 text-[#A3B18A]" />
                 <p className="text-xs font-bold text-[#1F4532] uppercase">Tempo de Atuação</p>
               </div>
             </div>
-            <div className="space-y-2">
-              <p className="text-xs text-[#6B7560] font-semibold">
-                {periodFilter === 'daily' ? `Meta Diária - Dia ${selectedPeriodIndex + 1} (h)` : 'Meta Mensal (h)'}
-              </p>
-              {isEditingTimeMeta ? (
-                <div className="flex gap-2 items-center">
-                  <input
-                    autoFocus
-                    type="number"
-                    value={timeMetaInputValue}
-                    onChange={handleTimeMetaInputChange}
-                    onKeyPress={handleTimeMetaKeyPress}
-                    placeholder="0"
-                    className="flex-1 px-2 py-1 border-2 border-[#A3B18A] rounded text-sm focus:outline-none focus:ring-2 focus:ring-[#1F4532]"
-                  />
-                  <button
-                    onClick={handleSaveTimeMeta}
-                    className="px-2 py-1 bg-[#1F4532] hover:bg-[#2D5740] text-white rounded text-xs font-medium transition-colors"
-                    title="Salvar"
-                  >
-                    ✓
-                  </button>
-                </div>
-              ) : (
-                <div className="flex items-center justify-between">
-                  <p className="text-lg font-bold text-[#A3B18A]">{currentTimeMeta.toFixed(1)}h</p>
-                  <button
-                    onClick={() => {
-                      console.log('📝 Iniciando edição de meta de tempo no card, valor atual:', currentTimeMeta);
-                      setTimeMetaInputValue(currentTimeMeta.toString());
-                      setIsEditingTimeMeta(true);
-                    }}
-                    className="px-1.5 py-0.5 bg-[#E8DCC8] hover:bg-[#D4CFC0] text-[#1F4532] rounded text-xs font-medium transition-colors"
-                    title="Editar meta"
-                  >
-                    <Edit2 className="w-3 h-3" />
-                  </button>
-                </div>
-              )}
-              {periodFilter === 'daily' && (
-                <p className="text-xs text-gray-500 mt-1">
-                  Horas atuais: {activationHours.toFixed(1)}h
+
+            <div className="space-y-2.5">
+              <div>
+                <p className="text-xs text-[#6B7560] font-semibold mb-1">Meta Mensal (h)</p>
+                <p className="text-lg font-bold text-[#A3B18A]">
+                  {apiData?.meta_tempo_atuacao_mensal?.[selectedPeriodIndex]?.toFixed(1) || '720.0'}h
                 </p>
-              )}
-            </div>
-            <div className="space-y-2 border-t border-[#E8DCC8] pt-3">
-              <div className="flex items-center justify-between mb-2">
-                <p className="text-xs text-[#6B7560] font-semibold">
-                  {periodFilter === 'daily' ? 'Dia / Meta Tempo / Atualiz.' : 'Mês / Meta Tempo / Atualiz.'}
+              </div>
+              <div className="border-t border-[#E8DCC8] pt-2">
+                <p className="text-xs text-[#6B7560] font-semibold mb-1">Meta Diária (h)</p>
+                <p className="text-lg font-bold text-[#A3B18A]">
+                  {apiData?.meta_tempo_atuacao_diaria?.[selectedPeriodIndex]?.toFixed(1) || '24.0'}h
                 </p>
-                <span className="text-xs text-gray-500">1 / 1</span>
-              </div>
-              <div className="space-y-1 max-h-32 overflow-y-auto">
-                {periodFilter === 'monthly' ? (
-                  monthNames.map((monthName, monthIndex) => {
-                    const metaId = `monthly_${monthIndex}`;
-                    const isEditing = editingTimeMetaId === metaId;
-                    const metaValue = allActivationMetas[metaId] || (apiData?.meta_tempo_atuacao_mensal?.[monthIndex] ?? 720);
-
-                    return (
-                      <div
-                        key={metaId}
-                        className="flex justify-between items-center text-xs border-b border-[#D4CFC0] pb-1 last:border-b-0 hover:bg-[#F0EAD2] px-1 py-0.5 rounded transition-colors"
-                      >
-                        <span className="font-bold text-[#1F4532] min-w-12">{monthName}</span>
-                        {isEditing ? (
-                          <div className="flex gap-1 items-center flex-1 justify-center">
-                            <input
-                              autoFocus
-                              type="number"
-                              value={editingTimeMetaValue}
-                              onChange={(e) => setEditingTimeMetaValue(e.target.value)}
-                              onKeyPress={(e) => {
-                                if (e.key === 'Enter') {
-                                  handleSaveTimeMetaFromTable(monthIndex);
-                                }
-                              }}
-                              placeholder="0"
-                              className="w-14 px-1 py-0.5 border border-[#A3B18A] rounded text-xs focus:outline-none focus:ring-1 focus:ring-[#1F4532]"
-                            />
-                            <button
-                              onClick={() => handleSaveTimeMetaFromTable(monthIndex)}
-                              className="px-1 py-0.5 bg-green-500 hover:bg-green-600 text-white rounded text-xs font-medium transition-colors"
-                              title="Salvar"
-                            >
-                              ✓
-                            </button>
-                            <button
-                              onClick={() => setEditingTimeMetaId(null)}
-                              className="px-1 py-0.5 bg-gray-400 hover:bg-gray-500 text-white rounded text-xs font-medium transition-colors"
-                              title="Cancelar"
-                            >
-                              ✕
-                            </button>
-                          </div>
-                        ) : (
-                          <>
-                            <span className="text-[#A3B18A] flex-1 text-center font-medium text-xs">{metaValue.toFixed(1)}h</span>
-                            <button
-                              onClick={() => {
-                                setEditingTimeMetaId(metaId);
-                                setEditingTimeMetaValue(metaValue.toString());
-                              }}
-                              className="px-1 py-0.5 bg-[#E8DCC8] hover:bg-[#D4CFC0] text-[#1F4532] rounded text-xs font-medium transition-colors"
-                              title="Editar"
-                            >
-                              <Edit2 className="w-3 h-3" />
-                            </button>
-                          </>
-                        )}
-                      </div>
-                    );
-                  })
-                ) : (
-                  dailyMetas.map((dayIndex) => {
-                    const metaId = `daily_${dayIndex}`;
-                    const isEditing = editingTimeMetaId === metaId;
-                    const metaValue = allActivationMetas[metaId] || (apiData?.meta_tempo_atuacao_diaria?.[dayIndex] ?? 24);
-
-                    return (
-                      <div
-                        key={metaId}
-                        className="flex justify-between items-center text-xs border-b border-[#D4CFC0] pb-1 last:border-b-0 hover:bg-[#F0EAD2] px-1 py-0.5 rounded transition-colors"
-                      >
-                        <span className="font-bold text-[#1F4532] min-w-12">D{dayIndex + 1}</span>
-                        {isEditing ? (
-                          <div className="flex gap-1 items-center flex-1 justify-center">
-                            <input
-                              autoFocus
-                              type="number"
-                              value={editingTimeMetaValue}
-                              onChange={(e) => setEditingTimeMetaValue(e.target.value)}
-                              onKeyPress={(e) => {
-                                if (e.key === 'Enter') {
-                                  handleSaveDailyTimeMetaFromTable(dayIndex);
-                                }
-                              }}
-                              placeholder="0"
-                              className="w-14 px-1 py-0.5 border border-[#A3B18A] rounded text-xs focus:outline-none focus:ring-1 focus:ring-[#1F4532]"
-                            />
-                            <button
-                              onClick={() => handleSaveDailyTimeMetaFromTable(dayIndex)}
-                              className="px-1 py-0.5 bg-green-500 hover:bg-green-600 text-white rounded text-xs font-medium transition-colors"
-                              title="Salvar"
-                            >
-                              ✓
-                            </button>
-                            <button
-                              onClick={() => setEditingTimeMetaId(null)}
-                              className="px-1 py-0.5 bg-gray-400 hover:bg-gray-500 text-white rounded text-xs font-medium transition-colors"
-                              title="Cancelar"
-                            >
-                              ✕
-                            </button>
-                          </div>
-                        ) : (
-                          <>
-                            <span className="text-[#A3B18A] flex-1 text-center font-medium text-xs">{metaValue.toFixed(1)}h</span>
-                            <button
-                              onClick={() => {
-                                setEditingTimeMetaId(metaId);
-                                setEditingTimeMetaValue(metaValue.toString());
-                              }}
-                              className="px-1 py-0.5 bg-[#E8DCC8] hover:bg-[#D4CFC0] text-[#1F4532] rounded text-xs font-medium transition-colors"
-                              title="Editar"
-                            >
-                              <Edit2 className="w-3 h-3" />
-                            </button>
-                          </>
-                        )}
-                      </div>
-                    );
-                  })
-                )}
-              </div>
-            </div>
-
-            <div className="space-y-2 border-t border-[#E8DCC8] pt-3">
-              <p className="text-xs text-[#6B7560] font-semibold mb-2">Dispositivos Ativos</p>
-              <div className="space-y-1 max-h-24 overflow-y-auto">
-                {deviceRankings.slice(0, 3).map((device) => {
-                  const deviceTimeMeta = deviceMetas[device.id] || (periodFilter === 'daily' ? 24 : 720);
-                  const isEditing = editingDeviceTimeId === device.id;
-
-                  return (
-                    <div
-                      key={device.id}
-                      className="flex items-center gap-2 text-xs bg-[#F0EAD2] p-2 rounded hover:bg-[#F0EAD2] cursor-pointer transition-colors"
-                    >
-                      <span className="text-base">{device.icon}</span>
-                      <div className="flex-1">
-                        <p className="font-semibold text-[#1F4532]">{device.name}</p>
-                        {isEditing ? (
-                          <div className="flex gap-1 mt-0.5">
-                            <input
-                              autoFocus
-                              type="number"
-                              value={deviceTimeInputValue}
-                              onChange={(e) => setDeviceTimeInputValue(e.target.value)}
-                              onKeyPress={(e) => {
-                                if (e.key === 'Enter') {
-                                  handleSaveDeviceTimeMeta(device.id);
-                                }
-                              }}
-                              placeholder="0"
-                              className="w-10 px-1 py-0.5 border border-[#D4CFC0] rounded text-xs focus:outline-none focus:ring-1 focus:ring-[#1F4532]"
-                            />
-                            <button
-                              onClick={() => handleSaveDeviceTimeMeta(device.id)}
-                              className="px-1.5 py-0.5 bg-green-500 hover:bg-green-600 text-white rounded text-xs font-medium transition-colors"
-                              title="Salvar"
-                            >
-                              ✓
-                            </button>
-                          </div>
-                        ) : (
-                          <div className="flex items-center gap-1">
-                            <p className="text-gray-500">{deviceTimeMeta.toFixed(1)}h - Score: {device.score}</p>
-                            <button
-                              onClick={() => {
-                                setEditingDeviceTimeId(device.id);
-                                setDeviceTimeInputValue(deviceTimeMeta.toString());
-                              }}
-                              className="px-1 py-0.5 bg-[#E8DCC8] hover:bg-[#D4CFC0] text-[#1F4532] rounded text-xs font-medium transition-colors"
-                              title="Editar meta"
-                            >
-                              <Edit2 className="w-3 h-3" />
-                            </button>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  );
-                })}
               </div>
             </div>
           </div>
