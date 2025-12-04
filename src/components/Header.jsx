@@ -49,15 +49,15 @@ const Header = ({ selectedEstablishment, onEstablishmentChange, selectedDeviceId
 
         <div className="flex items-center gap-2 sm:gap-3 flex-wrap justify-end">
           {/* Establishment Dropdown */}
-          <div className="relative">
+          <div className="relative hidden sm:block">
             <Tooltip>
               <TooltipTrigger asChild>
                 <button
                   onClick={() => setIsEstablishmentDropdownOpen(!isEstablishmentDropdownOpen)}
-                  className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[#E8DCC8] hover:bg-[#D4CFC0] transition-colors"
+                  className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg bg-[#E8DCC8] hover:bg-[#D4CFC0] transition-colors text-sm"
                 >
-                  <span className="text-sm font-medium text-[#1F4532]">{currentEstablishment.name}</span>
-                  <ChevronDown className="w-4 h-4 text-[#6B7560]" />
+                  <span className="hidden sm:inline font-medium text-[#1F4532]">{currentEstablishment.name}</span>
+                  <ChevronDown className="w-4 h-4 text-[#6B7560] flex-shrink-0" />
                 </button>
               </TooltipTrigger>
               <TooltipContent>
