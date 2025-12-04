@@ -846,8 +846,8 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
 
           {/* Redução Mensal Card */}
           {(periodFilter === 'monthly' || periodFilter === 'daily') && (
-            <div className="bg-gradient-to-br from-[#10b981] to-[#059669] rounded-lg p-5 shadow-md border border-[#10b981]/20 text-white flex flex-col justify-center hover:shadow-lg transition-shadow h-fit">
-              <p className="text-3xl font-bold mb-1 text-center">{monthlyEconomyPercentage.toFixed(1)}%</p>
+            <div className="bg-gradient-to-br from-[#10b981] to-[#059669] rounded-lg p-3 sm:p-5 shadow-md border border-[#10b981]/20 text-white flex flex-col justify-center hover:shadow-lg transition-shadow h-fit">
+              <p className="text-2xl sm:text-3xl font-bold mb-1 text-center">{monthlyEconomyPercentage.toFixed(1)}%</p>
               <p className="text-xs font-semibold text-center leading-tight">
                 ↓ Redução Mensal
               </p>
