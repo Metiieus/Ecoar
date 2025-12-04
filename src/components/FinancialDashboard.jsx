@@ -863,8 +863,8 @@ const FinancialDashboard = ({ onSelectDevice }) => {
             <span className="text-sm font-bold text-[#6B7560]">E</span>
           </div>
           <div>
-            <p className="text-xs font-semibold text-[#1F4532]">Unidade {selectedEstablishment}</p>
-            <p className="text-xs text-gray-500">Reais (R$)</p>
+            <p className="text-xs text-gray-500">Sistema de Gestão de Energia</p>
+            <p className="text-xs font-semibold text-[#1F4532]">Reais (R$)</p>
           </div>
         </div>
 
