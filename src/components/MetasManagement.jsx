@@ -224,7 +224,7 @@ export const MetasManagement = () => {
       {activeTab === 'monthly' && (
         <div className="space-y-4">
           {/* Stats */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <div className="bg-white rounded-lg p-4 shadow-md border border-[#E8DCC8]">
               <p className="text-xs text-[#6B7560] font-semibold mb-1">Customizadas</p>
               <p className="text-2xl font-bold text-[#1F4532]">{statsMonthly.customCount}</p>
@@ -312,7 +312,7 @@ export const MetasManagement = () => {
       {activeTab === 'daily' && (
         <div className="space-y-4">
           {/* Stats */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <div className="bg-white rounded-lg p-4 shadow-md border border-[#E8DCC8]">
               <p className="text-xs text-[#6B7560] font-semibold mb-1">Customizadas</p>
               <p className="text-2xl font-bold text-[#1F4532]">{statsDaily.customCount}</p>
