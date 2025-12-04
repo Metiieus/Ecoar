@@ -90,13 +90,9 @@ export const useApiData = (deviceId = 33, includeHistory = true) => {
         // Enrich API data with calculated fields for consumption without system
         // Prefer API-provided "consumo_sem_sistema" arrays when they contain meaningful values.
         // Otherwise, derive them from consumo_mensal / consumo_diario_mes_corrente without rounding
-        // Check if the API actually provides data (not all zeros, and not missing)
-        const hasApiMonthlyWithout = Array.isArray(apiData.consumo_sem_sistema_mensal)
-          && apiData.consumo_sem_sistema_mensal.length > 0
-          && apiData.consumo_sem_sistema_mensal.some(v => v && Number(v) > 0);
-        const hasApiDailyWithout = Array.isArray(apiData.consumo_sem_sistema_diario)
-          && apiData.consumo_sem_sistema_diario.length > 0
-          && apiData.consumo_sem_sistema_diario.some(v => v && Number(v) > 0);
+        // If API returns the field (even if zeros), use it as-is. Only fallback if field is missing entirely.
+        const hasApiMonthlyWithout = Array.isArray(apiData.consumo_sem_sistema_mensal) && apiData.consumo_sem_sistema_mensal.length > 0;
+        const hasApiDailyWithout = Array.isArray(apiData.consumo_sem_sistema_diario) && apiData.consumo_sem_sistema_diario.length > 0;
         const hasApiOcupacaoMensal = Array.isArray(apiData.ocupacao_mensal) && apiData.ocupacao_mensal.length > 0;
         const hasApiOcupacaoDiaria = Array.isArray(apiData.ocupacao_diaria) && apiData.ocupacao_diaria.length > 0;
         const hasApiMetaTempoMensal = Array.isArray(apiData.meta_tempo_atuacao_mensal) && apiData.meta_tempo_atuacao_mensal.length > 0;
