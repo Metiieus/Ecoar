@@ -4,9 +4,8 @@ import { Tooltip, TooltipTrigger, TooltipContent } from './ui/tooltip';
 const Sidebar = ({ activeTab = 'dashboard', setActiveTab, onLogout, onClose }) => {
   const menuItems = [
     { id: 'dashboard', icon: LayoutDashboard, label: 'Dashboard', tooltip: 'Visualize métricas e gráficos de energia' },
-    { id: 'validator', icon: CheckCircle, label: 'Validador de Dados', tooltip: 'Valide os dados recebidos da API' },
     { id: 'consumption', icon: BarChart3, label: 'Consumo', tooltip: 'Em breve', disabled: true },
-    { id: 'control', icon: Settings, label: 'Central de Controle', tooltip: 'Em breve', disabled: true }
+    { id: 'control', icon: Settings, label: 'Central de Controle', tooltip: 'Monitore dispositivos e valide dados' }
   ];
 
   return (
